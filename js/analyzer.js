@@ -11,7 +11,6 @@
   "use strict";
 
   var BASE = (function () {
-    // Resolve /data/ relative to site root, not the current page path
     var scripts = document.getElementsByTagName("script");
     for (var i = 0; i < scripts.length; i++) {
       var src = scripts[i].src || "";
@@ -23,10 +22,35 @@
   })();
 
   var state = {
-    funds: [],          // loaded from funds.json
-    events: [],         // loaded from events.json
-    selected: new Set() // tickers the user has chosen
+    funds:    [],
+    events:   [],
+    selected: new Set()
   };
+
+  // ─── Tier metadata ────────────────────────────────────────────────────────
+
+  var TIER_META = {
+    direct:           { label: "Direct — Nasdaq-100",     cls: "exposure-badge--direct",   icon: "⚡" },
+    likely:           { label: "Likely exposure",          cls: "exposure-badge--likely",   icon: "⚠" },
+    different_timing: { label: "Different timeline",       cls: "exposure-badge--diff",     icon: "⏱" },
+    indirect:         { label: "Indirect (fund-of-funds)", cls: "exposure-badge--indirect", icon: "↩" },
+    low:              { label: "Low / zero",               cls: "exposure-badge--low",      icon: "○" },
+  };
+
+  var TIER_GROUPS = [
+    { tier: "direct",           icon: "⚡", label: "Direct — Nasdaq-100 fast-entry" },
+    { tier: "likely",           icon: "⚠", label: "Likely — Large-cap growth & tech" },
+    { tier: "different_timing", icon: "⏱", label: "Different timeline — S&P 500 / total market" },
+    { tier: "indirect",         icon: "↩", label: "Indirect — Target-date & fund-of-funds" },
+    { tier: "low",              icon: "○", label: "Low / zero — International & bonds" },
+  ];
+
+  var QUICK_STARTS = [
+    { label: "Vanguard core",  tickers: ["QQQ", "VOO", "VTI", "VFORX"] },
+    { label: "Growth tilt",    tickers: ["QQQ", "VUG", "IWF"] },
+    { label: "Fidelity plan",  tickers: ["QQQ", "FTEC", "FFFHX"] },
+    { label: "S&P 500 only",   tickers: ["VOO", "IVV", "SPY"] },
+  ];
 
   // ─── Data loading ─────────────────────────────────────────────────────────
 
@@ -64,15 +88,7 @@
     }).sort(function (a, b) { return a.date.localeCompare(b.date); });
   }
 
-  // ─── Exposure badge ───────────────────────────────────────────────────────
-
-  var TIER_META = {
-    direct:          { label: "Direct — Nasdaq-100",     cls: "exposure-badge--direct",   icon: "⚡" },
-    likely:          { label: "Likely exposure",          cls: "exposure-badge--likely",   icon: "⚠" },
-    different_timing:{ label: "Different timing",         cls: "exposure-badge--diff",     icon: "⏱" },
-    indirect:        { label: "Indirect (fund-of-funds)", cls: "exposure-badge--indirect", icon: "↩" },
-    low:             { label: "Low / zero",               cls: "exposure-badge--low",      icon: "○" },
-  };
+  // ─── Badge ────────────────────────────────────────────────────────────────
 
   function badgeHTML(tier) {
     var meta = TIER_META[tier] || TIER_META["low"];
@@ -81,81 +97,67 @@
 
   // ─── Card rendering ───────────────────────────────────────────────────────
 
-  function row(label, value, extraClass) {
-    return (
-      '<div class="fund-card__row">' +
-      '<span class="fund-card__label">' + label + "</span>" +
-      '<span class="fund-card__value' + (extraClass ? " " + extraClass : "") + '">' + value + "</span>" +
-      "</div>"
-    );
-  }
-
   function renderHorizonEvents(fund) {
     var evts = eventsForFund(fund);
     if (!evts.length) return "";
-    var items = evts.slice(0, 4).map(function (e) {
-      var conf = e.confidence ? ' <span class="text-muted text-small">(' + e.confidence + ")</span>" : "";
+    var items = evts.slice(0, 3).map(function (e) {
+      var conf = e.confidence ? ' <span class="conf-tag">(' + e.confidence + ")</span>" : "";
       return "<li><strong>" + e.date + "</strong> — " + e.title + conf + "</li>";
     }).join("");
     return (
-      '<div class="fund-card__section">' +
-      "<h4>On the Horizon</h4><ul>" + items + "</ul></div>"
-    );
-  }
-
-  function renderTradeoffs(fund) {
-    if (!fund.tradeoffs) return "";
-    return (
-      '<div class="fund-card__section">' +
-      "<h4>Tradeoffs to understand</h4>" +
-      "<p>" + fund.tradeoffs + "</p></div>"
+      '<div class="fund-card__horizon">' +
+      '<p class="card-section-label">On the horizon</p>' +
+      "<ul>" + items + "</ul>" +
+      "</div>"
     );
   }
 
   function renderQuestions(fund) {
     if (!fund.questions_to_ask || !fund.questions_to_ask.length) return "";
-    var items = fund.questions_to_ask.map(function (q) { return "<li>" + q + "</li>"; }).join("");
+    var items = fund.questions_to_ask.slice(0, 2).map(function (q) {
+      return "<li>" + q + "</li>";
+    }).join("");
     return (
-      '<div class="fund-card__section">' +
-      "<h4>Questions to ask your plan administrator or adviser</h4>" +
-      "<ul>" + items + "</ul></div>"
+      '<div class="fund-card__questions">' +
+      '<p class="card-section-label">Questions to ask your plan administrator</p>' +
+      "<ul>" + items + "</ul>" +
+      "</div>"
     );
   }
 
   function renderFundCard(fund) {
     var indexStr = fund.tracks_index || "Fund-of-funds (see underlying)";
-    var weightStr = fund.weighting || "—";
-    var top10 = fund.top10_weight_pct != null
-      ? fund.top10_weight_pct + "%"
-      : '<span class="data-status data-status--todo">unverified — see source</span>';
-    var asOf = fund.as_of
-      ? '<span class="text-small text-muted">as of ' + fund.as_of + "</span>"
-      : "";
-    var srcLink = fund.source_url && fund.source_url.startsWith("http")
-      ? ' <a href="' + fund.source_url + '" target="_blank" rel="noopener noreferrer" class="text-small">issuer page ↗</a>'
+    var srcLink  = fund.source_url && fund.source_url.startsWith("http")
+      ? '<a href="' + fund.source_url + '" target="_blank" rel="noopener noreferrer" class="card-src-link">issuer page ↗</a>'
       : "";
 
     return (
       '<article class="fund-card" data-ticker="' + fund.ticker + '">' +
+
       '<div class="fund-card__header">' +
-      '<div><div class="fund-card__ticker">' + fund.ticker + "</div>" +
-      '<div class="fund-card__name">' + fund.name + "</div></div>" +
-      badgeHTML(fund.exposure_tier) +
-      "</div>" +
-      '<div class="fund-card__body">' +
-      row("Tracks", indexStr) +
-      row("Weighting", weightStr) +
-      row("Top-10 weight", top10 + " " + asOf) +
-      row("Provider", fund.index_provider || "—") +
-      "</div>" +
-      '<div class="fund-card__body" style="padding-top:0">' +
-      "<p>" + fund.exposure_note + "</p>" +
-      srcLink +
-      "</div>" +
+        '<div>' +
+          '<div class="fund-card__ticker">' + fund.ticker + '</div>' +
+          '<div class="fund-card__name">' + fund.name + '</div>' +
+        '</div>' +
+        badgeHTML(fund.exposure_tier) +
+      '</div>' +
+
+      '<div class="fund-card__lead">' + fund.exposure_note + '</div>' +
+
       renderHorizonEvents(fund) +
-      renderTradeoffs(fund) +
       renderQuestions(fund) +
-      "</article>"
+
+      '<details class="fund-card__details">' +
+        '<summary>Technical details</summary>' +
+        '<div class="fund-card__detail-rows">' +
+          '<div class="fund-card__row"><span class="fund-card__label">Tracks</span><span class="fund-card__value">' + indexStr + '</span></div>' +
+          '<div class="fund-card__row"><span class="fund-card__label">Weighting</span><span class="fund-card__value">' + (fund.weighting || "—") + '</span></div>' +
+          '<div class="fund-card__row"><span class="fund-card__label">Provider</span><span class="fund-card__value">' + (fund.index_provider || "—") + '</span></div>' +
+        '</div>' +
+        (srcLink ? '<p style="margin:.6rem 0 0">' + srcLink + '</p>' : '') +
+      '</details>' +
+
+      '</article>'
     );
   }
 
@@ -163,51 +165,61 @@
     return (
       '<article class="fund-card" data-ticker="' + ticker + '">' +
       '<div class="fund-card__header">' +
-      '<div><div class="fund-card__ticker">' + ticker + "</div>" +
-      '<div class="fund-card__name">Not in curated universe</div></div>' +
-      '<span class="exposure-badge exposure-badge--low">? Unknown</span>' +
-      "</div>" +
-      '<div class="fund-card__body">' +
-      "<p>This ticker isn’t in the curated fund universe. " +
-      "Check the fund’s prospectus or issuer website to determine which index it tracks, " +
-      "then compare against the methodology information in the Tracker.</p></div></article>"
+        '<div><div class="fund-card__ticker">' + ticker + '</div>' +
+        '<div class="fund-card__name">Not in curated universe</div></div>' +
+        '<span class="exposure-badge exposure-badge--low">? Unknown</span>' +
+      '</div>' +
+      '<div class="fund-card__lead">This ticker isn\'t in the curated fund universe. ' +
+      'Check the fund\'s prospectus or issuer website to find which index it tracks, ' +
+      'then compare against the <a href="../tracker/">Tracker</a> for methodology details.</div>' +
+      '</article>'
     );
   }
 
-  // ─── Portfolio roll-up ────────────────────────────────────────────────────
+  // ─── Portfolio rollup ─────────────────────────────────────────────────────
 
-  function renderRollup(selectedFunds) {
-    if (selectedFunds.length < 2) return "";
-    var direct   = selectedFunds.filter(function (f) { return f.exposure_tier === "direct"; });
-    var likely   = selectedFunds.filter(function (f) { return f.exposure_tier === "likely"; });
-    var diffTime = selectedFunds.filter(function (f) { return f.exposure_tier === "different_timing"; });
-    var indirect = selectedFunds.filter(function (f) { return f.exposure_tier === "indirect"; });
+  function renderRollup(funds) {
+    if (funds.length < 2) return "";
+
+    var direct   = funds.filter(function (f) { return f.exposure_tier === "direct"; });
+    var likely   = funds.filter(function (f) { return f.exposure_tier === "likely"; });
+    var diffTime = funds.filter(function (f) { return f.exposure_tier === "different_timing"; });
 
     var overlaps = [];
-    var nasdaq100Funds = selectedFunds.filter(function (f) { return f.tracks_index === "Nasdaq-100"; });
-    var sp500Funds = selectedFunds.filter(function (f) { return f.tracks_index === "S&P 500"; });
-    if (nasdaq100Funds.length > 1) {
-      overlaps.push("Multiple Nasdaq-100 funds: " + nasdaq100Funds.map(function (f) { return f.ticker; }).join(", ") + " — these track the same index.");
-    }
-    if (sp500Funds.length > 1) {
-      overlaps.push("Multiple S&P 500 funds: " + sp500Funds.map(function (f) { return f.ticker; }).join(", ") + " — these track the same index.");
-    }
+    var byIndex = {};
+    funds.forEach(function (f) {
+      if (!f.tracks_index) return;
+      byIndex[f.tracks_index] = byIndex[f.tracks_index] || [];
+      byIndex[f.tracks_index].push(f.ticker);
+    });
+    Object.keys(byIndex).forEach(function (idx) {
+      if (byIndex[idx].length > 1) {
+        overlaps.push(byIndex[idx].join(" + ") + " both track " + idx + " — same underlying index.");
+      }
+    });
+
+    var statsHtml =
+      '<div class="rollup-stat"><div class="rollup-stat__num">' + funds.length + '</div><div class="rollup-stat__label">Funds selected</div></div>' +
+      '<div class="rollup-stat"><div class="rollup-stat__num rollup-stat__num--hot">' + direct.length + '</div><div class="rollup-stat__label">Direct Nasdaq-100</div></div>' +
+      '<div class="rollup-stat"><div class="rollup-stat__num rollup-stat__num--amber">' + likely.length + '</div><div class="rollup-stat__label">Likely exposure</div></div>' +
+      '<div class="rollup-stat"><div class="rollup-stat__num rollup-stat__num--teal">' + diffTime.length + '</div><div class="rollup-stat__label">Different timeline</div></div>';
+
+    var overlapHtml = overlaps.length
+      ? '<div class="rollup-overlaps"><p class="card-section-label" style="color:#a0bdb6">Duplicate index exposure</p><ul>' +
+        overlaps.map(function (o) { return "<li>" + o + "</li>"; }).join("") +
+        "</ul></div>"
+      : "";
 
     return (
       '<div class="rollup-card">' +
-      "<h2>Portfolio Overview</h2>" +
-      '<div class="rollup-grid">' +
-      '<div class="rollup-stat"><div class="rollup-stat__num">' + selectedFunds.length + '</div><div class="rollup-stat__label">Funds analyzed</div></div>' +
-      '<div class="rollup-stat"><div class="rollup-stat__num">' + direct.length + '</div><div class="rollup-stat__label">Direct Nasdaq-100 exposure</div></div>' +
-      '<div class="rollup-stat"><div class="rollup-stat__num">' + likely.length + '</div><div class="rollup-stat__label">Likely exposure (growth/tech)</div></div>' +
-      '<div class="rollup-stat"><div class="rollup-stat__num">' + diffTime.length + '</div><div class="rollup-stat__label">Different-timing (S&P / total-mkt)</div></div>' +
-      "</div>" +
-      (overlaps.length ? '<div style="margin-top:1rem"><h3 style="color:#c7d9f5;font-size:.95rem">Overlapping index exposure</h3><ul style="color:#e0eaff;font-size:.88rem">' + overlaps.map(function (o) { return "<li>" + o + "</li>"; }).join("") + "</ul></div>" : "") +
-      "</div>"
+        '<p class="rollup-card__label">Portfolio snapshot</p>' +
+        '<div class="rollup-grid">' + statsHtml + '</div>' +
+        overlapHtml +
+      '</div>'
     );
   }
 
-  // ─── Update the analysis output ───────────────────────────────────────────
+  // ─── Output rendering ─────────────────────────────────────────────────────
 
   function updateAnalysis() {
     var outputEl = document.getElementById("analyzer-output");
@@ -215,7 +227,12 @@
 
     var tickers = Array.from(state.selected);
     if (!tickers.length) {
-      outputEl.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🔍</div><p>Select funds above or paste tickers to see the analysis.</p></div>';
+      outputEl.innerHTML =
+        '<div class="analyzer-empty">' +
+        '<div class="analyzer-empty__icon" aria-hidden="true"><i class="bi bi-arrow-left-circle"></i></div>' +
+        '<p class="analyzer-empty__head">Select funds from the left panel</p>' +
+        '<p class="text-small text-muted">Each card shows the index tracked, whether the May 2026 fast-entry rule applies, upcoming events, and questions to ask your plan administrator.</p>' +
+        '</div>';
       return;
     }
 
@@ -226,23 +243,107 @@
       f ? known.push(f) : unknown.push(t);
     });
 
-    var html = "";
+    var html = renderRollup(known);
+
     if (known.length) {
-      html += renderRollup(known);
       html += '<div class="fund-grid">';
       known.forEach(function (f) { html += renderFundCard(f); });
-      html += "</div>";
+      html += '</div>';
     }
     if (unknown.length) {
       html += '<div class="fund-grid" style="margin-top:1rem">';
       unknown.forEach(function (t) { html += renderUnknownCard(t); });
-      html += "</div>";
+      html += '</div>';
     }
 
     outputEl.innerHTML = html;
   }
 
-  // ─── Input handling ───────────────────────────────────────────────────────
+  // ─── Input: chips ─────────────────────────────────────────────────────────
+
+  function buildFundChips() {
+    var container = document.getElementById("fund-chips");
+    if (!container) return;
+    container.innerHTML = "";
+
+    TIER_GROUPS.forEach(function (group) {
+      var fundsInGroup = state.funds.filter(function (f) { return f.exposure_tier === group.tier; });
+      if (!fundsInGroup.length) return;
+
+      var groupDiv = document.createElement("div");
+      groupDiv.className = "fund-group";
+
+      var labelEl = document.createElement("p");
+      labelEl.className = "fund-group__label";
+      labelEl.textContent = group.icon + " " + group.label;
+      groupDiv.appendChild(labelEl);
+
+      var chipsDiv = document.createElement("div");
+      chipsDiv.className = "fund-group__chips";
+
+      fundsInGroup.forEach(function (fund) {
+        var lbl = document.createElement("label");
+        lbl.className = "fund-chip";
+        lbl.title = fund.name;
+
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = fund.ticker;
+        cb.addEventListener("change", function () {
+          toggleTicker(fund.ticker);
+          lbl.classList.toggle("selected", cb.checked);
+          syncQuickStartButtons();
+          updateAnalysis();
+        });
+
+        lbl.appendChild(cb);
+        lbl.appendChild(document.createTextNode(fund.ticker));
+        chipsDiv.appendChild(lbl);
+      });
+
+      groupDiv.appendChild(chipsDiv);
+      container.appendChild(groupDiv);
+    });
+  }
+
+  // ─── Input: quick-start combos ────────────────────────────────────────────
+
+  function syncQuickStartButtons() {
+    document.querySelectorAll(".btn--quick").forEach(function (btn) {
+      var tickers = JSON.parse(btn.dataset.tickers);
+      var allSelected = tickers.every(function (t) { return state.selected.has(t); });
+      btn.classList.toggle("active", allSelected);
+    });
+  }
+
+  function handleQuickSelect() {
+    var container = document.getElementById("quick-starts");
+    if (!container) return;
+
+    QUICK_STARTS.forEach(function (combo) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn--quick";
+      btn.textContent = combo.label;
+      btn.dataset.tickers = JSON.stringify(combo.tickers);
+
+      btn.addEventListener("click", function () {
+        var allSelected = combo.tickers.every(function (t) { return state.selected.has(t); });
+        if (allSelected) {
+          combo.tickers.forEach(function (t) { state.selected.delete(t); });
+        } else {
+          combo.tickers.forEach(function (t) { state.selected.add(t); });
+        }
+        syncChipState();
+        syncQuickStartButtons();
+        updateAnalysis();
+      });
+
+      container.appendChild(btn);
+    });
+  }
+
+  // ─── Input: paste ─────────────────────────────────────────────────────────
 
   function parseTickers(text) {
     return text
@@ -259,27 +360,10 @@
     }
   }
 
-  function buildFundChips() {
-    var container = document.getElementById("fund-chips");
-    if (!container) return;
-    container.innerHTML = "";
-    state.funds.forEach(function (fund) {
-      var label = document.createElement("label");
-      label.className = "fund-chip";
-      label.title = fund.name;
-
-      var cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.value = fund.ticker;
-      cb.addEventListener("change", function () {
-        toggleTicker(fund.ticker);
-        label.classList.toggle("selected", cb.checked);
-        updateAnalysis();
-      });
-
-      label.appendChild(cb);
-      label.appendChild(document.createTextNode(fund.ticker));
-      container.appendChild(label);
+  function syncChipState() {
+    document.querySelectorAll("#fund-chips input[type=checkbox]").forEach(function (cb) {
+      cb.checked = state.selected.has(cb.value);
+      cb.closest("label").classList.toggle("selected", cb.checked);
     });
   }
 
@@ -288,47 +372,11 @@
     if (!ta) return;
     ta.addEventListener("input", function () {
       var tickers = parseTickers(ta.value);
-      // Sync with chip state
-      var chipCbs = document.querySelectorAll("#fund-chips input[type=checkbox]");
-      chipCbs.forEach(function (cb) {
-        cb.checked = tickers.indexOf(cb.value) > -1;
-        cb.closest("label").classList.toggle("selected", cb.checked);
-      });
       state.selected = new Set(tickers);
+      syncChipState();
+      syncQuickStartButtons();
       updateAnalysis();
     });
-  }
-
-  function handleFileUpload() {
-    var input = document.getElementById("file-upload");
-    var zone  = document.getElementById("upload-zone");
-    if (!input || !zone) return;
-
-    zone.addEventListener("click", function () { input.click(); });
-    zone.addEventListener("dragover", function (e) { e.preventDefault(); zone.classList.add("drag-over"); });
-    zone.addEventListener("dragleave", function () { zone.classList.remove("drag-over"); });
-    zone.addEventListener("drop", function (e) {
-      e.preventDefault();
-      zone.classList.remove("drag-over");
-      var file = e.dataTransfer.files[0];
-      if (file) readFile(file);
-    });
-    input.addEventListener("change", function () {
-      if (input.files[0]) readFile(input.files[0]);
-    });
-
-    function readFile(file) {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        var tickers = parseTickers(e.target.result);
-        var ta = document.getElementById("ticker-paste");
-        if (ta) ta.value = tickers.join(", ");
-        state.selected = new Set(tickers);
-        updateAnalysis();
-        zone.textContent = "✓ Loaded " + file.name + " — " + tickers.length + " ticker(s) found";
-      };
-      reader.readAsText(file);
-    }
   }
 
   function handleClear() {
@@ -338,40 +386,38 @@
       state.selected.clear();
       var ta = document.getElementById("ticker-paste");
       if (ta) ta.value = "";
-      document.querySelectorAll("#fund-chips input[type=checkbox]").forEach(function (cb) {
-        cb.checked = false;
-        cb.closest("label").classList.remove("selected");
-      });
-      var zone = document.getElementById("upload-zone");
-      if (zone) zone.textContent = "Drop a CSV or fund-menu text file here, or click to browse";
+      syncChipState();
+      syncQuickStartButtons();
       updateAnalysis();
     });
   }
 
-  // ─── Init ─────────────────────────────────────────────────────────────────
+  // ─── Error state ──────────────────────────────────────────────────────────
 
   function showError(msg) {
     var el = document.getElementById("analyzer-output");
-    if (el) el.innerHTML = '<div class="empty-state"><div class="empty-state__icon">⚠️</div><p>' + msg + "</p></div>";
+    if (el) el.innerHTML = '<div class="analyzer-empty"><div class="analyzer-empty__icon">⚠️</div><p class="analyzer-empty__head">Could not load fund data</p><p class="text-small text-muted">' + msg + "</p></div>";
   }
+
+  // ─── Init ─────────────────────────────────────────────────────────────────
 
   function init() {
     var statusEl = document.getElementById("load-status");
-    if (statusEl) statusEl.textContent = "Loading fund data…";
+    if (statusEl) statusEl.textContent = "Loading…";
 
     loadData()
       .then(function () {
-        if (statusEl) statusEl.textContent = state.funds.length + " funds loaded.";
+        if (statusEl) statusEl.textContent = state.funds.length + " funds";
         buildFundChips();
+        handleQuickSelect();
         handlePasteInput();
-        handleFileUpload();
         handleClear();
         updateAnalysis();
       })
       .catch(function (err) {
         console.error("Analyzer load error:", err);
         if (statusEl) statusEl.textContent = "Error loading data.";
-        showError("Could not load fund data. If you’re viewing this locally via file://, open it from a local server or GitHub Pages instead.");
+        showError("If you're viewing this locally via file://, open it from a local server or GitHub Pages instead.");
       });
   }
 
