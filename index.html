@@ -16,11 +16,11 @@
 <!-- ─── Nav ─── -->
 <nav class="site-nav" aria-label="Site navigation">
   <div class="site-nav__inner">
-    <a href="/" class="site-nav__brand">PFE</a>
+    <a href="/passive-fund-exposure/" class="site-nav__brand">PFE</a>
     <ul class="site-nav__links">
-      <li><a href="explainer/">Explainer</a></li>
-      <li><a href="tracker/">Tracker</a></li>
-      <li><a href="analyzer/" class="nav-cta">Check My Funds →</a></li>
+      <li><a href="/passive-fund-exposure/explainer/">Explainer</a></li>
+      <li><a href="/passive-fund-exposure/tracker/">Tracker</a></li>
+      <li><a href="/passive-fund-exposure/analyzer/" class="nav-cta">Check My Funds →</a></li>
     </ul>
   </div>
 </nav>
@@ -178,18 +178,11 @@
   <div class="email-section__inner">
     <h2 id="email-heading">Get the alert when it happens.</h2>
     <p>One email per material event — fast-entry addition, eligibility window, lockup expiry. No noise.</p>
-    <form
-      action="https://buttondown.email/api/emails/embed-subscribe/YOUR_LIST_NAME"
-      method="post"
-      target="popupwindow"
-      onsubmit="window.open('https://buttondown.email/YOUR_LIST_NAME','popupwindow')"
-      class="email-form"
-      aria-label="Subscribe to index event alerts"
-    >
-      <input type="email" name="email" placeholder="your@email.com" required autocomplete="email" aria-label="Email address">
-      <button type="submit" class="btn btn--amber">Notify me</button>
-    </form>
-    <p class="email-meta">Email goes to Buttondown — not this repo. <a href="privacy/">Privacy</a> · <a href="feed.xml">RSS instead</a></p>
+    <div class="email-form email-form--coming-soon">
+      <p style="margin:0;color:var(--muted-dark);font-size:.95rem">Email alerts are being configured. In the meantime:</p>
+      <a href="feed.xml" class="btn btn--amber" style="text-decoration:none">Subscribe via RSS →</a>
+    </div>
+    <p class="email-meta"><a href="/passive-fund-exposure/privacy/">Privacy</a> · <a href="feed.xml">RSS feed</a></p>
   </div>
 </section>
 
@@ -197,12 +190,11 @@
 <footer class="site-footer" role="contentinfo">
   <div class="site-footer__inner">
     <ul class="site-footer__links">
-      <li><a href="explainer/">Explainer</a></li>
-      <li><a href="analyzer/">Analyzer</a></li>
-      <li><a href="tracker/">Tracker</a></li>
-      <li><a href="about/">About</a></li>
-      <li><a href="privacy/">Privacy</a></li>
-      <li><a href="disclaimer/">Disclaimer</a></li>
+      <li><a href="/passive-fund-exposure/explainer/">Explainer</a></li>
+      <li><a href="/passive-fund-exposure/analyzer/">Analyzer</a></li>
+      <li><a href="/passive-fund-exposure/tracker/">Tracker</a></li>
+      <li><a href="/passive-fund-exposure/privacy/">Privacy</a></li>
+      <li><a href="/passive-fund-exposure/disclaimer/">Disclaimer</a></li>
       <li><a href="feed.xml">RSS</a></li>
     </ul>
     <p class="site-footer__copy">Educational information only — not investment advice.</p>
