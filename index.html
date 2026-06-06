@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Passive Fund Exposure — Know When Index Rules Change What You Own</title>
+  <meta name="description" content="We tell you when index-rule changes change what your retirement funds own. Educational information about passive funds, index methodology changes, and large IPOs like SpaceX.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="alternate" type="application/rss+xml" title="Index Events Feed" href="feed.xml">
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Site navigation">
+  <div class="site-nav__inner">
+    <a href="/" class="site-nav__brand">Passive Fund Exposure</a>
+    <ul class="site-nav__links">
+      <li><a href="/" aria-current="page">Home</a></li>
+      <li><a href="explainer/">Explainer</a></li>
+      <li><a href="analyzer/">Analyzer</a></li>
+      <li><a href="tracker/">Tracker</a></li>
+      <li><a href="about/">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>We tell you when index-rule changes change what your retirement funds own.</h1>
+    <p>Passive funds follow rulebooks called indexes. When those rules change — like the Nasdaq-100's new fast-entry rule for large IPOs — what your 401(k) holds may change too. We track the rules so you can ask the right questions.</p>
+    <div class="privacy-notice" role="note">
+      <span aria-hidden="true">🔒</span>
+      Your holdings are analyzed in your browser and never sent to a server.
+    </div>
+  </div>
+</header>
+
+<section class="email-section" aria-labelledby="email-heading">
+  <div class="container">
+    <h2 id="email-heading">Get notified when the rules change</h2>
+    <p>Free email updates when a material methodology change, large IPO filing, or eligibility window arrives. No spam — unsubscribe any time.</p>
+    <!-- Buttondown embed — replace YOUR_LIST_NAME with your Buttondown username -->
+    <form
+      action="https://buttondown.email/api/emails/embed-subscribe/YOUR_LIST_NAME"
+      method="post"
+      target="popupwindow"
+      onsubmit="window.open('https://buttondown.email/YOUR_LIST_NAME','popupwindow')"
+      class="email-form"
+      aria-label="Subscribe to updates"
+    >
+      <input
+        type="email"
+        name="email"
+        id="bd-email"
+        placeholder="your@email.com"
+        required
+        autocomplete="email"
+        aria-label="Email address"
+      >
+      <button type="submit" class="btn btn--primary">Subscribe</button>
+    </form>
+    <p class="text-small text-muted" style="margin-top:.75rem">Your email goes to Buttondown's servers, not this repo. See our <a href="privacy/">Privacy page</a>.</p>
+    <p style="margin-top:.5rem"><a href="feed.xml" class="rss-link">&#x2605; RSS feed</a> also available for free.</p>
+  </div>
+</section>
+
+<section class="features" aria-labelledby="features-heading">
+  <div class="container">
+    <h2 id="features-heading">What's here</h2>
+    <p class="text-muted">Three tools, all free, all educational.</p>
+    <div class="features__grid">
+
+      <article class="feature-card">
+        <div class="feature-card__icon" aria-hidden="true">📖</div>
+        <h3><a href="explainer/">Plain-language Explainer</a></h3>
+        <p>What "passive" really means, how the Nasdaq-100 fast-entry rule works, the SpaceX case, and how S&P 500 timing differs.</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-card__icon" aria-hidden="true">🔍</div>
+        <h3><a href="analyzer/">Exposure Analyzer</a></h3>
+        <p>Select funds from your 401(k) menu. See which indexes they track, how fast-entry affects each, and what questions to ask your plan administrator.</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-card__icon" aria-hidden="true">🗓</div>
+        <h3><a href="tracker/">Methodology &amp; Event Tracker</a></h3>
+        <p>A timeline of index rule changes, IPO filings, eligibility windows, lockup expiries, and reconstitution dates — with source links.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="prose-section" aria-labelledby="context-heading">
+  <div class="prose-body">
+    <h2 id="context-heading">What prompted this</h2>
+    <p>On May 1, 2026, the Nasdaq-100 Index adopted a new "fast-entry" rule. Under it, a large-cap company with a low public float that lists on Nasdaq can be evaluated for index inclusion beginning around the 7th trading day after its IPO — and added around the 15th trading day. That's far faster than the old process.</p>
+    <p>Several large private companies — most prominently SpaceX — have been reported to be considering Nasdaq listings in 2026. If one qualifies under the fast-entry rule, it would appear in funds like QQQ and QQQM within weeks of its IPO.</p>
+    <p>The S&P 500 indexes have not adopted a similar rule. They still require 12 months of trading history and GAAP profitability. So which funds are affected — and when — depends entirely on which index they track.</p>
+    <p>This site helps you understand those distinctions. It does not tell you what to do about them. <a href="explainer/">Read the full explainer →</a></p>
+  </div>
+</section>
+
+<section class="prose-section" style="background:var(--bg)">
+  <div class="prose-body">
+    <div class="callout callout--neutral">
+      <strong>Privacy guarantee:</strong> The Exposure Analyzer runs entirely in your browser. When you enter fund tickers or upload a file, that information is processed locally by JavaScript on your device. It is never transmitted to this site's servers or any third party. <a href="privacy/">Full privacy details →</a>
+    </div>
+    <div class="callout callout--amber">
+      <strong>This is educational information, not investment advice.</strong> This site describes how index rules work and how changes may affect fund holdings. It does not recommend any action and does not constitute financial, investment, legal, or tax advice. Consult a qualified adviser or your plan administrator for guidance specific to your situation.
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="site-footer__inner">
+    <ul class="site-footer__links">
+      <li><a href="explainer/">Explainer</a></li>
+      <li><a href="analyzer/">Analyzer</a></li>
+      <li><a href="tracker/">Tracker</a></li>
+      <li><a href="about/">About</a></li>
+      <li><a href="privacy/">Privacy</a></li>
+      <li><a href="disclaimer/">Disclaimer</a></li>
+      <li><a href="feed.xml">RSS Feed</a></li>
+    </ul>
+    <p class="site-footer__copy">Educational information only — not investment advice.</p>
+  </div>
+</footer>
+
+<script src="js/disclaimer.js"></script>
+</body>
+</html>

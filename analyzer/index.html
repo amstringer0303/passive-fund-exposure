@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exposure Analyzer — Passive Fund Exposure</title>
+  <meta name="description" content="Select funds from your retirement plan menu to see which index each tracks, whether fast-entry rules apply, and what questions to ask. Runs entirely in your browser — nothing is transmitted.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Site navigation">
+  <div class="site-nav__inner">
+    <a href="/" class="site-nav__brand">Passive Fund Exposure</a>
+    <ul class="site-nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/explainer/">Explainer</a></li>
+      <li><a href="/analyzer/" aria-current="page">Analyzer</a></li>
+      <li><a href="/tracker/">Tracker</a></li>
+      <li><a href="/about/">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="container">
+    <h1>Exposure Analyzer</h1>
+    <p>Select funds from your plan menu, paste tickers, or upload a fund list. Each fund card shows which index it tracks, its exposure tier, and questions to ask.</p>
+    <div class="privacy-notice" role="note" style="margin-top:.75rem">
+      <span aria-hidden="true">🔒</span>
+      Everything runs in your browser — your fund selections are never transmitted to any server.
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="container" style="padding-top:1.5rem;padding-bottom:3rem">
+
+  <!-- ─── Input area ─────────────────────────────────────────────────────── -->
+  <div class="analyzer-input" aria-labelledby="input-heading">
+    <h2 id="input-heading">Step 1: Select your funds</h2>
+    <p class="text-muted text-small" id="load-status">Loading fund data…</p>
+
+    <p class="text-small" style="margin-bottom:.6rem"><strong>Choose from the curated universe</strong> — click chips to add/remove:</p>
+    <div class="fund-selector-list" id="fund-chips" role="group" aria-label="Fund universe chips"></div>
+
+    <div class="or-divider" aria-hidden="true">or paste / type tickers</div>
+
+    <label for="ticker-paste" class="visually-hidden">Paste tickers, comma- or space-separated</label>
+    <textarea
+      class="fund-paste"
+      id="ticker-paste"
+      placeholder="QQQ, VOO, VTI, VFORX  (comma or space separated)"
+      aria-describedby="paste-hint"
+    ></textarea>
+    <p class="text-small text-muted" id="paste-hint">You can paste a fund-menu list — tickers will be extracted automatically.</p>
+
+    <div class="or-divider" aria-hidden="true">or upload a file</div>
+
+    <div class="upload-zone" id="upload-zone" role="button" tabindex="0" aria-label="Upload a CSV or text file containing fund tickers">
+      Drop a CSV or fund-menu text file here, or click to browse
+    </div>
+    <input type="file" id="file-upload" accept=".csv,.txt" class="visually-hidden" aria-label="Choose file">
+
+    <div class="actions-row">
+      <button class="btn btn--ghost" id="btn-clear" type="button">Clear all</button>
+    </div>
+  </div>
+
+  <!-- ─── Exposure tier legend ───────────────────────────────────────────── -->
+  <details style="margin-bottom:1.5rem">
+    <summary style="cursor:pointer;font-weight:600;font-size:.9rem">What do the exposure tiers mean?</summary>
+    <div style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.75rem;font-size:.88rem">
+      <div><span class="exposure-badge exposure-badge--direct">⚡ Direct — Nasdaq-100</span><p style="margin:.3rem 0 0">Directly tracks the Nasdaq-100. Subject to fast-entry rule effective May 1, 2026.</p></div>
+      <div><span class="exposure-badge exposure-badge--likely">⚠ Likely exposure</span><p style="margin:.3rem 0 0">Large-cap growth or tech-sector funds. Likely to pick up large-cap mega-cap IPOs at next reconstitution.</p></div>
+      <div><span class="exposure-badge exposure-badge--diff">⏱ Different timing</span><p style="margin:.3rem 0 0">S&P 500 and total-market funds. Exposure arrives later, under different rules (12-month seasoning, profitability for S&P 500).</p></div>
+      <div><span class="exposure-badge exposure-badge--indirect">↩ Indirect</span><p style="margin:.3rem 0 0">Target-date and fund-of-funds. Exposure passes through underlying index funds — check which ones your plan actually holds.</p></div>
+      <div><span class="exposure-badge exposure-badge--low">○ Low / zero</span><p style="margin:.3rem 0 0">International, bond, and dividend funds. U.S. equity index rule changes have minimal or no direct effect.</p></div>
+    </div>
+  </details>
+
+  <!-- ─── Output area ────────────────────────────────────────────────────── -->
+  <section aria-labelledby="output-heading" aria-live="polite">
+    <h2 id="output-heading" class="visually-hidden">Analysis results</h2>
+    <div id="analyzer-output">
+      <div class="empty-state">
+        <div class="empty-state__icon" aria-hidden="true">🔍</div>
+        <p>Select funds above or paste tickers to see the analysis.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Inline disclaimer at end of analyzer output -->
+  <div class="disclaimer-inline-target"></div>
+
+</div><!-- .container -->
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="site-footer__inner">
+    <ul class="site-footer__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="../explainer/">Explainer</a></li>
+      <li><a href="../tracker/">Tracker</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../disclaimer/">Disclaimer</a></li>
+    </ul>
+    <p class="site-footer__copy">Educational information only — not investment advice.</p>
+  </div>
+</footer>
+
+<script src="../js/analyzer.js"></script>
+<script src="../js/disclaimer.js"></script>
+</body>
+</html>

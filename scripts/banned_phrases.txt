@@ -1,0 +1,45 @@
+# One phrase per line. copy_lint.py matches whole-word (word-boundary) phrases,
+# case-insensitively, in all .html and .js files.
+# Lines beginning with # are comments and are ignored.
+#
+# Guiding rule: phrases here must ONLY appear in prescriptive / advice-giving copy.
+# Do NOT list "investment advice" — it appears correctly in disclaimers as "not investment advice".
+# Do NOT list bare "sell" — it would match "Russell". Use "you should sell" instead.
+# Do NOT list bare "buy" — use "you should buy" to prevent false positives in data copy.
+#
+# Each phrase below would be out of place in purely descriptive, educational text.
+
+you should invest
+you should buy
+you should sell
+you should hold
+you should switch
+you should move
+you should rebalance
+you must invest
+you must buy
+you must sell
+will lose money
+you'll lose
+guaranteed return
+guaranteed income
+safe investment
+this is safe
+not safe to
+fiduciary breach
+fiduciary violation
+i recommend
+we recommend
+this is our recommendation
+this is a recommendation
+better off switching
+worse off holding
+this will increase your
+this will decrease your
+don't worry about
+nothing to worry about
+no risk
+low risk investment
+high risk investment
+make money by
+lose money by

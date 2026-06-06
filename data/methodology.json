@@ -1,0 +1,98 @@
+[
+  {
+    "id": "meth-001",
+    "index": "Nasdaq-100",
+    "index_provider": "Nasdaq Index Services",
+    "change_date": "2026-05-01",
+    "change_type": "fast_entry_rule_added",
+    "summary": "Fast-entry rule for low-float, large-cap IPOs added to Nasdaq-100 methodology.",
+    "mechanism": {
+      "eligibility_assessment_day": "~7th trading day after exchange listing",
+      "addition_day": "~15th trading day after exchange listing",
+      "market_cap_criterion": "Must rank among the top 40 eligible non-members by market cap at assessment",
+      "liquidity_test": "$5,000,000 average daily trading volume (ADTV)",
+      "float_criterion": "Low-float: qualifying names have float-adjusted market cap below a threshold relative to total market cap",
+      "initial_weight_cap": "Approximately one-third of float-adjusted market cap, or 3× the normal float cap — whichever is lower",
+      "weight_ramp": "Additional weight may be applied at subsequent quarterly reconstitutions as float increases",
+      "deletion_protection": "Standard deletion rules apply at reconstitution; fast-entry additions are not protected from deletion"
+    },
+    "affected_funds": ["QQQ", "QQQM"],
+    "source_url": "TODO: Link to official Nasdaq Index Services methodology PDF once published",
+    "as_of": "2026-06-06",
+    "confidence": "reported — verify against official Nasdaq document"
+  },
+  {
+    "id": "meth-002",
+    "index": "S&P 500",
+    "index_provider": "S&P Dow Jones Indices",
+    "change_date": null,
+    "change_type": "standing_policy_no_fast_entry",
+    "summary": "S&P 500 retains 12-month trading history and GAAP profitability requirements. No fast-entry rule adopted.",
+    "mechanism": {
+      "seasoning_requirement": "At least 12 months of trading history on a U.S. exchange",
+      "profitability_requirement": "Positive GAAP earnings in the most recent quarter AND positive sum of GAAP earnings over the most recent four quarters",
+      "market_cap_threshold": "Approximately $18B (floor — actual threshold may be updated; confirm in current methodology)",
+      "float_requirement": "At least 50% of shares outstanding must be publicly traded",
+      "ipo_fast_entry": "None — no fast-entry or immediate-addition pathway for IPOs",
+      "reconstitution": "Quarterly (March, June, September, December); additions and deletions at any time for corporate actions"
+    },
+    "affected_funds": ["VOO", "IVV", "SPY", "XLK"],
+    "source_url": "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf",
+    "as_of": "2026-06-06",
+    "confidence": "confirmed — per current S&P 500 methodology document"
+  },
+  {
+    "id": "meth-003",
+    "index": "CRSP US Total Market",
+    "index_provider": "CRSP (Center for Research in Security Prices, University of Chicago)",
+    "change_date": null,
+    "change_type": "standing_policy",
+    "summary": "CRSP US Total Market includes all U.S. primary-listed stocks across micro, small, mid, and large cap. IPOs are added at the end of the calendar quarter following their listing.",
+    "mechanism": {
+      "coverage": "All U.S. primary-listed equities meeting exchange listing standards",
+      "ipo_inclusion": "Added at quarter-end following listing (generally no IPO fast-entry)",
+      "reconstitution": "Quarterly (March, June, September, December)",
+      "float_adjustment": "Float-adjusted market cap weighting"
+    },
+    "affected_funds": ["VTI", "VUG", "VFORX", "VTIVX"],
+    "source_url": "https://www.crsp.org/products/documentation/crsp-indexes",
+    "as_of": "2026-06-06",
+    "confidence": "confirmed — per CRSP index documentation"
+  },
+  {
+    "id": "meth-004",
+    "index": "Russell 1000 / Russell 1000 Growth",
+    "index_provider": "FTSE Russell",
+    "change_date": null,
+    "change_type": "standing_policy",
+    "summary": "Russell 1000 reconstitutes annually each June. IPOs listing after the rank cutoff (typically end of May) must wait for next annual reconstitution or an interim addition. Growth/Value segment assignments occur at reconstitution based on style factors.",
+    "mechanism": {
+      "annual_reconstitution": "Each June; rank date typically end of May",
+      "ipo_inclusion_regular": "IPOs listing before rank date are eligible for annual reconstitution",
+      "ipo_inclusion_interim": "FTSE Russell may add large IPOs between annual reconstitutions at its discretion; not guaranteed",
+      "growth_value_assignment": "Based on price-to-book ratio and long-term growth forecasts at reconstitution"
+    },
+    "affected_funds": ["IWF"],
+    "source_url": "https://research.ftserussell.com/index-notices/home/reconstitution",
+    "as_of": "2026-06-06",
+    "confidence": "confirmed — per FTSE Russell index methodology"
+  },
+  {
+    "id": "meth-005",
+    "index": "MSCI US IMI Information Technology 25/50",
+    "index_provider": "MSCI",
+    "change_date": null,
+    "change_type": "standing_policy",
+    "summary": "MSCI conducts quarterly index reviews (February, May, August, November effective dates). Large new listings may be added at quarterly reviews. GICS sector classification (Information Technology) required for inclusion in sector indexes.",
+    "mechanism": {
+      "quarterly_reviews": "February, May, August, November (announced ~6–8 weeks before effective date)",
+      "ipo_inclusion": "Eligible for next quarterly review after listing; immediate addition possible for very large IPOs at MSCI discretion",
+      "sector_filter": "Must be classified as Information Technology under the Global Industry Classification Standard (GICS)",
+      "weighting_cap": "25/50 diversification requirement: no single name >25%, sum of names >5% cannot exceed 50%"
+    },
+    "affected_funds": ["VGT"],
+    "source_url": "https://www.msci.com/index-methodology",
+    "as_of": "2026-06-06",
+    "confidence": "confirmed — per MSCI index methodology documents"
+  }
+]

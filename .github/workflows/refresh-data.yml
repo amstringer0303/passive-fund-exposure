@@ -1,0 +1,46 @@
+name: Refresh Data
+
+on:
+  schedule:
+    # Daily at 06:00 UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Use a token that can push back to the repo
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Refresh data
+        run: python scripts/refresh_data.py
+        env:
+          # Add any required API keys here as repo secrets — none currently needed
+          # EXAMPLE_API_KEY: ${{ secrets.EXAMPLE_API_KEY }}
+          PYTHONUNBUFFERED: "1"
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet data/ feed.xml || (
+            git add data/events.json data/funds.json data/methodology.json feed.xml &&
+            git commit -m "chore: refresh data $(date -u +%Y-%m-%d)" &&
+            git push
+          )

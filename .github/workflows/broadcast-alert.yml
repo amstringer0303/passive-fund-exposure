@@ -1,0 +1,36 @@
+name: Broadcast Alert (Scaffold — Disabled)
+
+# This workflow is scaffolded for Phase 2.
+# To enable: add your Buttondown API key as a repo secret named BUTTONDOWN_API_KEY,
+# write the broadcast body, and uncomment the steps below.
+#
+# The email list lives with Buttondown — no subscriber data is stored in this repo.
+
+on:
+  workflow_dispatch:
+    inputs:
+      subject:
+        description: "Email subject line"
+        required: true
+        type: string
+      body:
+        description: "Email body (plain text or Markdown)"
+        required: true
+        type: string
+
+jobs:
+  broadcast:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Send broadcast via Buttondown API
+        # Uncomment when ready for Phase 2:
+        # run: |
+        #   curl -X POST https://api.buttondown.email/v1/emails \
+        #     -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
+        #     -H "Content-Type: application/json" \
+        #     -d "{\"subject\": \"${{ inputs.subject }}\", \"body\": \"${{ inputs.body }}\"}"
+        run: echo "Broadcast scaffold — no action taken. Enable in Phase 2."
