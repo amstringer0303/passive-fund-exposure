@@ -214,6 +214,74 @@ li { margin-bottom: .3rem; }
 }
 .ticker__item::after { content: '·'; opacity: .4; }
 
+/* ─── Context strip ─── */
+.context-strip {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+}
+.context-strip__inner {
+  max-width: var(--max-w-wide); margin: 0 auto;
+  display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+}
+.context-strip__label {
+  font-size: .7rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--accent);
+  white-space: nowrap; flex-shrink: 0;
+}
+.context-strip__text {
+  font-size: .88rem; color: var(--muted); flex: 1; min-width: 200px;
+}
+.context-strip__text strong { color: var(--text); }
+.context-strip__link {
+  font-size: .82rem; font-weight: 700; color: var(--accent);
+  text-decoration: none; white-space: nowrap; flex-shrink: 0;
+}
+.context-strip__link:hover { text-decoration: underline; }
+
+/* ─── Stakes (two-column fund split) ─── */
+.stakes {
+  background: var(--bg);
+  padding: 3.5rem 1.5rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.stakes__inner {
+  max-width: var(--max-w-wide); margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+}
+.stakes__col {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.stakes__col--exposed { border-top: 3px solid var(--coral, #df5b4f); }
+.stakes__col--different { border-top: 3px solid var(--accent); }
+.stakes__badge {
+  display: inline-block;
+  font-size: .7rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: .2rem .65rem; border-radius: 999px;
+  margin-bottom: 1.1rem;
+}
+.stakes__badge--hot   { background: #fde8e6; color: #b91c1c; }
+.stakes__badge--cool  { background: #d1fae5; color: #065f46; }
+.stakes__fund-list { display: flex; flex-direction: column; gap: .9rem; }
+.stakes__fund { }
+.stakes__ticker {
+  display: block;
+  font-size: .92rem; font-weight: 800; color: var(--ink);
+  letter-spacing: -.01em; margin-bottom: .15rem;
+}
+.stakes__note {
+  font-size: .82rem; color: var(--muted); line-height: 1.5;
+}
+.stakes__cta {
+  max-width: var(--max-w-wide); margin: 2rem auto 0;
+  text-align: center;
+}
+
 /* ─── Stats bar ─── */
 .stats-bar {
   background: var(--surface);
