@@ -3,115 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Passive Fund Exposure — Know When Index Rules Change What You Own</title>
-  <meta name="description" content="We tell you when index-rule changes change what your retirement funds own. Educational information about passive funds, index methodology changes, and large IPOs like SpaceX.">
+  <title>Passive Fund Exposure — Your Index Fund Just Changed What It Owns</title>
+  <meta name="description" content="The Nasdaq-100 added a fast-entry rule. SpaceX may list next month. See which funds in your 401(k) are affected — analyzed in your browser, never transmitted.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="css/style.css">
   <link rel="alternate" type="application/rss+xml" title="Index Events Feed" href="feed.xml">
 </head>
 <body>
 
+<!-- ─── Nav ─── -->
 <nav class="site-nav" aria-label="Site navigation">
   <div class="site-nav__inner">
-    <a href="/" class="site-nav__brand">Passive Fund Exposure</a>
+    <a href="/" class="site-nav__brand">PFE</a>
     <ul class="site-nav__links">
-      <li><a href="/" aria-current="page">Home</a></li>
       <li><a href="explainer/">Explainer</a></li>
-      <li><a href="analyzer/">Analyzer</a></li>
       <li><a href="tracker/">Tracker</a></li>
-      <li><a href="about/">About</a></li>
+      <li><a href="analyzer/" class="nav-cta">Check My Funds →</a></li>
     </ul>
   </div>
 </nav>
 
+<!-- ─── Hero ─── -->
 <header class="hero">
-  <div class="container">
-    <h1>We tell you when index-rule changes change what your retirement funds own.</h1>
-    <p>Passive funds follow rulebooks called indexes. When those rules change — like the Nasdaq-100's new fast-entry rule for large IPOs — what your 401(k) holds may change too. We track the rules so you can ask the right questions.</p>
-    <div class="privacy-notice" role="note">
-      <span aria-hidden="true">🔒</span>
-      Your holdings are analyzed in your browser and never sent to a server.
+  <div class="hero__inner">
+    <div class="hero__tag">
+      <span class="hero__tag-dot" aria-hidden="true"></span>
+      May 1, 2026 — The Rule Changed
+    </div>
+    <h1>SpaceX could be in<br>your 401(k) by <em>July.</em></h1>
+    <p class="hero__sub">The Nasdaq-100 added a fast-entry rule for mega-cap IPOs. If SpaceX lists on Nasdaq, funds like QQQ could hold it within 15 trading days. Here's what that means for you.</p>
+    <div class="hero__ctas">
+      <a href="analyzer/" class="btn btn--amber">Check My Funds →</a>
+      <a href="explainer/" class="btn btn--ghost-white">How it works</a>
+    </div>
+    <div class="privacy-notice">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Fund analysis runs in your browser — never transmitted
     </div>
   </div>
 </header>
 
+<!-- ─── Ticker tape ─── -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker__inner">
+    <span class="ticker__item">QQQ</span>
+    <span class="ticker__item">QQQM</span>
+    <span class="ticker__item">VOO</span>
+    <span class="ticker__item">VTI</span>
+    <span class="ticker__item">VUG</span>
+    <span class="ticker__item">SCHG</span>
+    <span class="ticker__item">IWF</span>
+    <span class="ticker__item">VGT</span>
+    <span class="ticker__item">XLK</span>
+    <span class="ticker__item">FTEC</span>
+    <span class="ticker__item">SPY</span>
+    <span class="ticker__item">IVV</span>
+    <span class="ticker__item">SCHB</span>
+    <span class="ticker__item">VXUS</span>
+    <span class="ticker__item">BND</span>
+    <span class="ticker__item">SCHD</span>
+    <span class="ticker__item">VFORX</span>
+    <span class="ticker__item">FFFHX</span>
+    <span class="ticker__item">TRRMX</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker__item">QQQ</span>
+    <span class="ticker__item">QQQM</span>
+    <span class="ticker__item">VOO</span>
+    <span class="ticker__item">VTI</span>
+    <span class="ticker__item">VUG</span>
+    <span class="ticker__item">SCHG</span>
+    <span class="ticker__item">IWF</span>
+    <span class="ticker__item">VGT</span>
+    <span class="ticker__item">XLK</span>
+    <span class="ticker__item">FTEC</span>
+    <span class="ticker__item">SPY</span>
+    <span class="ticker__item">IVV</span>
+    <span class="ticker__item">SCHB</span>
+    <span class="ticker__item">VXUS</span>
+    <span class="ticker__item">BND</span>
+    <span class="ticker__item">SCHD</span>
+    <span class="ticker__item">VFORX</span>
+    <span class="ticker__item">FFFHX</span>
+    <span class="ticker__item">TRRMX</span>
+  </div>
+</div>
+
+<!-- ─── Stats bar ─── -->
+<section class="stats-bar" aria-label="Site statistics">
+  <div class="stats-bar__inner">
+    <div class="stat">
+      <div class="stat__num">19<span>+</span></div>
+      <div class="stat__label">Funds tracked</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num"><span>~</span>15</div>
+      <div class="stat__label">Trading days to inclusion</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">5</div>
+      <div class="stat__label">Index providers monitored</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">0</div>
+      <div class="stat__label">Data sent to any server</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── The moment ─── -->
+<section class="moment" aria-labelledby="moment-heading">
+  <div class="moment__inner">
+    <p class="section-label">What changed</p>
+    <h2 id="moment-heading">Two indexes. Two very different timelines.</h2>
+    <div class="moment__grid">
+
+      <article class="moment-card moment-card--amber">
+        <div class="moment-card__eyebrow">Nasdaq-100 · Effective May 1, 2026</div>
+        <div class="moment-card__headline">Fast-entry rule adopted</div>
+        <p class="moment-card__body">Top-40 mega-cap IPOs assessed on day ~7 after listing. Added on day ~15. Low-float names enter at a capped weight and ramp at subsequent reconstitutions.</p>
+        <div>
+          <span class="moment-card__badge badge--red">Affects QQQ · QQQM</span>
+        </div>
+      </article>
+
+      <article class="moment-card">
+        <div class="moment-card__eyebrow">S&amp;P 500 · No change</div>
+        <div class="moment-card__headline">12-month seasoning still required</div>
+        <p class="moment-card__body">S&amp;P Dow Jones has not adopted fast-entry. Requires 12 months of trading history plus GAAP profitability. SpaceX's S&amp;P 500 debut would be years away, not weeks.</p>
+        <div>
+          <span class="moment-card__badge badge--blue">Affects VOO · IVV · SPY differently</span>
+        </div>
+      </article>
+
+      <article class="moment-card">
+        <div class="moment-card__eyebrow">SpaceX · Reported listing ~June 12</div>
+        <div class="moment-card__headline">First fast-entry test case</div>
+        <p class="moment-card__body">Reported Nasdaq listing target: June 12 (ticker SPCX). Based on press reporting — not yet SEC-confirmed. If it lists and qualifies, QQQ holders could own it by early July.</p>
+        <div>
+          <span class="moment-card__badge badge--amber">Reported · Verify on EDGAR</span>
+        </div>
+      </article>
+
+      <article class="moment-card">
+        <div class="moment-card__eyebrow">Target-date funds · Your 401(k)</div>
+        <div class="moment-card__headline">It depends on what's inside</div>
+        <p class="moment-card__body">A "2045 Fund" holds underlying index funds. The exposure passes through. The question is which indexes those underlying funds track — and whether any track the Nasdaq-100.</p>
+        <div>
+          <span class="moment-card__badge badge--green">Use the Analyzer to check</span>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── Features ─── -->
+<section class="features" aria-labelledby="features-heading">
+  <div class="features__header">
+    <p class="section-label">Three tools</p>
+    <h2 id="features-heading">Everything you need to understand this.</h2>
+  </div>
+  <div class="features__grid">
+
+    <a href="explainer/" class="feature-card">
+      <div class="feature-card__num" aria-hidden="true">01</div>
+      <h3>Plain-language Explainer</h3>
+      <p>How passive funds work, what the fast-entry rule actually says, and why S&amp;P timing is completely different.</p>
+      <span class="feature-card__arrow">Read the explainer <span aria-hidden="true">→</span></span>
+    </a>
+
+    <a href="analyzer/" class="feature-card">
+      <div class="feature-card__num" aria-hidden="true">02</div>
+      <h3>Exposure Analyzer</h3>
+      <p>Pick the funds on your plan menu. Get a card for each one: which index, which tier, what questions to ask. All in your browser.</p>
+      <span class="feature-card__arrow">Open the analyzer <span aria-hidden="true">→</span></span>
+    </a>
+
+    <a href="tracker/" class="feature-card">
+      <div class="feature-card__num" aria-hidden="true">03</div>
+      <h3>Event Tracker + RSS</h3>
+      <p>A sourced timeline of methodology changes, IPO filings, eligibility windows, and reconstitution dates. Free RSS feed included.</p>
+      <span class="feature-card__arrow">View the tracker <span aria-hidden="true">→</span></span>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── Email ─── -->
 <section class="email-section" aria-labelledby="email-heading">
-  <div class="container">
-    <h2 id="email-heading">Get notified when the rules change</h2>
-    <p>Free email updates when a material methodology change, large IPO filing, or eligibility window arrives. No spam — unsubscribe any time.</p>
-    <!-- Buttondown embed — replace YOUR_LIST_NAME with your Buttondown username -->
+  <div class="email-section__inner">
+    <h2 id="email-heading">Get the alert when it happens.</h2>
+    <p>Free email when a material event lands — fast-entry addition, eligibility window, lockup expiry. No noise.</p>
     <form
       action="https://buttondown.email/api/emails/embed-subscribe/YOUR_LIST_NAME"
       method="post"
       target="popupwindow"
       onsubmit="window.open('https://buttondown.email/YOUR_LIST_NAME','popupwindow')"
       class="email-form"
-      aria-label="Subscribe to updates"
+      aria-label="Subscribe to index event alerts"
     >
-      <input
-        type="email"
-        name="email"
-        id="bd-email"
-        placeholder="your@email.com"
-        required
-        autocomplete="email"
-        aria-label="Email address"
-      >
-      <button type="submit" class="btn btn--primary">Subscribe</button>
+      <input type="email" name="email" placeholder="your@email.com" required autocomplete="email" aria-label="Email address">
+      <button type="submit" class="btn btn--amber">Notify me</button>
     </form>
-    <p class="text-small text-muted" style="margin-top:.75rem">Your email goes to Buttondown's servers, not this repo. See our <a href="privacy/">Privacy page</a>.</p>
-    <p style="margin-top:.5rem"><a href="feed.xml" class="rss-link">&#x2605; RSS feed</a> also available for free.</p>
+    <p class="email-meta">Email goes to Buttondown — not this repo. <a href="privacy/">Privacy details</a> · <a href="feed.xml">RSS instead</a></p>
   </div>
 </section>
 
-<section class="features" aria-labelledby="features-heading">
-  <div class="container">
-    <h2 id="features-heading">What's here</h2>
-    <p class="text-muted">Three tools, all free, all educational.</p>
-    <div class="features__grid">
-
-      <article class="feature-card">
-        <div class="feature-card__icon" aria-hidden="true">📖</div>
-        <h3><a href="explainer/">Plain-language Explainer</a></h3>
-        <p>What "passive" really means, how the Nasdaq-100 fast-entry rule works, the SpaceX case, and how S&P 500 timing differs.</p>
-      </article>
-
-      <article class="feature-card">
-        <div class="feature-card__icon" aria-hidden="true">🔍</div>
-        <h3><a href="analyzer/">Exposure Analyzer</a></h3>
-        <p>Select funds from your 401(k) menu. See which indexes they track, how fast-entry affects each, and what questions to ask your plan administrator.</p>
-      </article>
-
-      <article class="feature-card">
-        <div class="feature-card__icon" aria-hidden="true">🗓</div>
-        <h3><a href="tracker/">Methodology &amp; Event Tracker</a></h3>
-        <p>A timeline of index rule changes, IPO filings, eligibility windows, lockup expiries, and reconstitution dates — with source links.</p>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-<section class="prose-section" aria-labelledby="context-heading">
-  <div class="prose-body">
-    <h2 id="context-heading">What prompted this</h2>
-    <p>On May 1, 2026, the Nasdaq-100 Index adopted a new "fast-entry" rule. Under it, a large-cap company with a low public float that lists on Nasdaq can be evaluated for index inclusion beginning around the 7th trading day after its IPO — and added around the 15th trading day. That's far faster than the old process.</p>
-    <p>Several large private companies — most prominently SpaceX — have been reported to be considering Nasdaq listings in 2026. If one qualifies under the fast-entry rule, it would appear in funds like QQQ and QQQM within weeks of its IPO.</p>
-    <p>The S&P 500 indexes have not adopted a similar rule. They still require 12 months of trading history and GAAP profitability. So which funds are affected — and when — depends entirely on which index they track.</p>
-    <p>This site helps you understand those distinctions. It does not tell you what to do about them. <a href="explainer/">Read the full explainer →</a></p>
-  </div>
-</section>
-
-<section class="prose-section" style="background:var(--bg)">
-  <div class="prose-body">
-    <div class="callout callout--neutral">
-      <strong>Privacy guarantee:</strong> The Exposure Analyzer runs entirely in your browser. When you enter fund tickers or upload a file, that information is processed locally by JavaScript on your device. It is never transmitted to this site's servers or any third party. <a href="privacy/">Full privacy details →</a>
-    </div>
-    <div class="callout callout--amber">
-      <strong>This is educational information, not investment advice.</strong> This site describes how index rules work and how changes may affect fund holdings. It does not recommend any action and does not constitute financial, investment, legal, or tax advice. Consult a qualified adviser or your plan administrator for guidance specific to your situation.
-    </div>
-  </div>
-</section>
-
+<!-- ─── Footer ─── -->
 <footer class="site-footer" role="contentinfo">
   <div class="site-footer__inner">
     <ul class="site-footer__links">
@@ -121,7 +220,7 @@
       <li><a href="about/">About</a></li>
       <li><a href="privacy/">Privacy</a></li>
       <li><a href="disclaimer/">Disclaimer</a></li>
-      <li><a href="feed.xml">RSS Feed</a></li>
+      <li><a href="feed.xml">RSS</a></li>
     </ul>
     <p class="site-footer__copy">Educational information only — not investment advice.</p>
   </div>
