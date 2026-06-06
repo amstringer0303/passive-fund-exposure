@@ -17,7 +17,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Use a token that can push back to the repo
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
