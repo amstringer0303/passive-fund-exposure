@@ -86,43 +86,49 @@
   </div>
 </div>
 
-<!-- ─── Two-column stakes ─── -->
-<!-- Job: show the split — which funds are affected and which aren't — clearly, concretely -->
+<!-- ─── Stakes (two-column fund split) ─── -->
 <section class="stakes" aria-labelledby="stakes-heading">
+  <div class="stakes__header">
+    <p class="section-label">Which funds are affected</p>
+    <h2 id="stakes-heading">Same IPO. Different rules. Different timelines.</h2>
+  </div>
   <div class="stakes__inner">
-    <h2 id="stakes-heading" class="visually-hidden">How the rule affects different funds differently</h2>
 
     <div class="stakes__col stakes__col--exposed">
-      <div class="stakes__badge stakes__badge--hot">Fast-entry applies</div>
+      <div class="stakes__col-head">
+        <span class="stakes__badge stakes__badge--hot">Fast-entry applies</span>
+      </div>
       <div class="stakes__fund-list">
         <div class="stakes__fund">
           <span class="stakes__ticker">QQQ / QQQM</span>
-          <span class="stakes__note">Directly tracks Nasdaq-100. A qualifying IPO appears here first.</span>
+          <span class="stakes__note">Tracks Nasdaq-100 directly. A qualifying IPO appears here within ~15 trading days.</span>
         </div>
         <div class="stakes__fund">
           <span class="stakes__ticker">VUG · SCHG · IWF</span>
-          <span class="stakes__note">Large-cap growth. Likely to pick up large-cap IPOs at next reconstitution.</span>
+          <span class="stakes__note">Large-cap growth. Likely to pick up a large IPO at the next reconstitution.</span>
         </div>
         <div class="stakes__fund">
           <span class="stakes__ticker">VGT · XLK · FTEC</span>
-          <span class="stakes__note">Tech sector. New IT-classified listings enter at quarterly MSCI / S&amp;P DJI review.</span>
+          <span class="stakes__note">Tech sector. New IT-classified listings enter at next quarterly index review.</span>
         </div>
       </div>
     </div>
 
     <div class="stakes__col stakes__col--different">
-      <div class="stakes__badge stakes__badge--cool">Different timeline</div>
+      <div class="stakes__col-head">
+        <span class="stakes__badge stakes__badge--cool">Different timeline</span>
+      </div>
       <div class="stakes__fund-list">
         <div class="stakes__fund">
           <span class="stakes__ticker">VOO · IVV · SPY</span>
-          <span class="stakes__note">S&amp;P 500 requires 12 months of trading + GAAP profitability. No fast-entry.</span>
+          <span class="stakes__note">S&amp;P 500 requires 12 months + GAAP profitability. No fast-entry pathway.</span>
         </div>
         <div class="stakes__fund">
           <span class="stakes__ticker">VTI · ITOT · SCHB</span>
           <span class="stakes__note">Total market. Follows CRSP / S&amp;P DJI quarterly schedule, not Nasdaq's.</span>
         </div>
         <div class="stakes__fund">
-          <span class="stakes__ticker">2045 Fund · Freedom 2050</span>
+          <span class="stakes__ticker">2045 · Freedom 2050</span>
           <span class="stakes__note">Target-date funds hold other funds. Exposure depends on what's inside.</span>
         </div>
       </div>
