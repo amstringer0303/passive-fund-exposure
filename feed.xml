@@ -3,11 +3,10 @@
   <channel>
     <title>Passive Fund Exposure — Index Events Feed</title>
     <link>https://amstringer0303.github.io/passive-fund-exposure/</link>
-    <description>Index methodology changes, IPO filings, eligibility windows, lockup expiries, and reconstitution dates affecting passive retirement funds. Educational information only — not investment advice.</description>
+    <description>Index methodology changes, IPO filings, eligibility windows, and reconstitution dates affecting passive retirement funds.</description>
     <language>en-us</language>
-    <lastBuildDate>2026-06-06</lastBuildDate>
+    <lastBuildDate>2026-06-07</lastBuildDate>
     <atom:link href="https://amstringer0303.github.io/passive-fund-exposure/feed.xml" rel="self" type="application/rss+xml"/>
-
   <item>
     <title><![CDATA[S&P DJI: No Fast-Entry Rule Adopted (Standing Policy)]]></title>
     <link>https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf</link>
@@ -16,7 +15,6 @@
     <description><![CDATA[As of the publication date of this page, S&P Dow Jones Indices has not adopted a fast-entry rule for the S&P 500 or related indexes. S&P 500 eligibility requires: (1) U.S. company, (2) market cap above $18B (approximate threshold, confirmed in S&P 500 methodology), (3) annual positive GAAP earnings, (4) at least 12 months of trading history, (5) adequate float. A company qualifying for Nasdaq-100 fast entry would not simultaneously qualify for the S&P 500.]]></description>
     <category>methodology_change</category>
   </item>
-
   <item>
     <title><![CDATA[Nasdaq-100 Quarterly Reconstitution (Q3 2026 — estimated)]]></title>
     <link>https://amstringer0303.github.io/passive-fund-exposure/tracker/</link>
@@ -25,7 +23,6 @@
     <description><![CDATA[Quarterly Nasdaq-100 reconstitution. If SpaceX or another fast-entry addition entered at a capped weight, weight ramps may occur here. New annual additions and deletions are also reviewed. Exact date TBD by Nasdaq announcement. The annual special rebalancing (if triggered by concentration) typically occurs in December.]]></description>
     <category>reconstitution</category>
   </item>
-
   <item>
     <title><![CDATA[SpaceX: Approximate Fast-Entry Addition Window (Estimated)]]></title>
     <link>https://amstringer0303.github.io/passive-fund-exposure/tracker/</link>
@@ -34,42 +31,45 @@
     <description><![CDATA[Estimated date (~15 trading days after a June 12 listing) when a qualifying SpaceX would be added to the Nasdaq-100 under the fast-entry rule. Actual date depends on confirmed listing date and passing all eligibility tests. Funds tracking the Nasdaq-100 (QQQ, QQQM) would then hold SpaceX at a capped initial weight, ramping at subsequent reconstitutions.]]></description>
     <category>eligibility_window</category>
   </item>
-
   <item>
     <title><![CDATA[SpaceX: Approximate Fast-Entry Eligibility Assessment Window (Estimated)]]></title>
     <link>https://amstringer0303.github.io/passive-fund-exposure/tracker/</link>
     <guid isPermaLink="false">evt-003</guid>
     <pubDate>2026-06-19 00:00:00 +0000</pubDate>
-    <description><![CDATA[Estimated date (7 trading days after a June 12 listing) when Nasdaq would assess SpaceX eligibility for fast-entry into the Nasdaq-100. Assessment depends on: (1) confirmed listing date, (2) market cap ranking among non-members, (3) passing the $5M ADTV liquidity test, (4) meeting low-float criteria. All dates and outcomes are estimates pending official Nasdaq announcements.]]></description>
+    <description><![CDATA[Estimated date (7 trading days after a June 12 listing) when Nasdaq would assess SpaceX eligibility for fast-entry into the Nasdaq-100. Assessment depends on: (1) confirmed listing date, (2) market cap ranking among non-members, (3) passing the $5M ADTV liquidity test, (4) meeting low-float criteria. All dates and outcomes are estimates pending official Nasdaq announcements. This is educational illustration, not a prediction.]]></description>
     <category>eligibility_window</category>
   </item>
-
   <item>
     <title><![CDATA[SpaceX (reported ticker: SPCX) — Reported Nasdaq Listing Target]]></title>
     <link>https://amstringer0303.github.io/passive-fund-exposure/tracker/</link>
     <guid isPermaLink="false">evt-002</guid>
     <pubDate>2026-06-12 00:00:00 +0000</pubDate>
-    <description><![CDATA[SpaceX has been reported to be targeting a Nasdaq listing on or around June 12, 2026, under the ticker SPCX. This date and ticker are based on press reporting as of early 2026 and have not been confirmed in an SEC 8-A filing as of the publication date of this page.]]></description>
+    <description><![CDATA[SpaceX has been reported to be targeting a Nasdaq listing on or around June 12, 2026, under the ticker SPCX. This date and ticker are based on press reporting as of early 2026 and have not been confirmed in an SEC 8-A filing as of the publication date of this page. If listing proceeds, SpaceX would become eligible for fast-entry evaluation beginning approximately the 7th trading day. Verify against SEC EDGAR and official Nasdaq announcements before drawing conclusions.]]></description>
     <category>listing</category>
   </item>
-
-  <item>
-    <title><![CDATA[Nasdaq-100 Fast-Entry Rule Takes Effect]]></title>
-    <link>https://amstringer0303.github.io/passive-fund-exposure/tracker/</link>
-    <guid isPermaLink="false">evt-001</guid>
-    <pubDate>2026-05-01 00:00:00 +0000</pubDate>
-    <description><![CDATA[The Nasdaq-100 Index's new fast-entry rule becomes operative. Large-cap IPOs with low float may now be evaluated for inclusion beginning approximately the 7th trading day after listing, with addition approximately 15 trading days after listing, subject to a $5M ADTV liquidity test.]]></description>
-    <category>methodology_change</category>
-  </item>
-
   <item>
     <title><![CDATA[Russell 1000 Annual Reconstitution (June 2026)]]></title>
     <link>https://research.ftserussell.com/index-notices/home/reconstitution</link>
     <guid isPermaLink="false">evt-006</guid>
     <pubDate>2026-06-01 00:00:00 +0000</pubDate>
-    <description><![CDATA[FTSE Russell conducts its annual reconstitution of the Russell 1000 and Russell 2000 indexes in June. Large IPOs that listed before the rank date (typically end of May) may be eligible for the annual reconstitution.]]></description>
+    <description><![CDATA[FTSE Russell conducts its annual reconstitution of the Russell 1000 and Russell 2000 indexes in June. Large IPOs that listed before the rank date (typically end of May) may be eligible for the annual reconstitution. IPOs listing after the rank cutoff must wait until the following year's reconstitution or an interim addition decision.]]></description>
     <category>reconstitution</category>
   </item>
-
+  <item>
+    <title><![CDATA[Nasdaq-100 Fast-Entry Rule Takes Effect]]></title>
+    <link>https://amstringer0303.github.io/passive-fund-exposure/tracker/</link>
+    <guid isPermaLink="false">evt-001</guid>
+    <pubDate>2026-05-01 00:00:00 +0000</pubDate>
+    <description><![CDATA[The Nasdaq-100 Index's new fast-entry rule becomes operative. Large-cap IPOs with low float may now be evaluated for inclusion beginning approximately the 7th trading day after listing, with addition approximately 15 trading days after listing, subject to a $5M average daily trading volume (ADTV) liquidity test. Low-float qualifying names enter at a capped weight (approximately one-third of float-adjusted market cap or three times the float cap, whichever is lower) and ramp up at subsequent quarterly reconstitutions.]]></description>
+    <category>methodology_change</category>
+  </item>
+  <item>
+    <title><![CDATA[MSCI Quarterly Index Review (Q1 2026)]]></title>
+    <link>https://www.msci.com/index-methodology</link>
+    <guid isPermaLink="false">evt-007</guid>
+    <pubDate>2026-03-01 00:00:00 +0000</pubDate>
+    <description><![CDATA[MSCI conducts quarterly index reviews for its US equity indexes including those tracked by VGT and FTEC. Large new listings may be evaluated for inclusion at these reviews. Results are typically announced several weeks before the effective date.]]></description>
+    <category>reconstitution</category>
+  </item>
   </channel>
 </rss>
