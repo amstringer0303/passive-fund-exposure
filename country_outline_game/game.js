@@ -489,6 +489,7 @@ function syncPresence() {
     }
   }
   updatePlayersList();
+  finishMultiplayerRoundIfDone();
   if (multiplayer.isHost && current) sendRoomState();
 }
 
@@ -533,6 +534,29 @@ function updatePlayersList() {
     item.append(name, points, state);
     playersList.appendChild(item);
   }
+}
+
+function activeRoundPlayers() {
+  ensurePlayer({ ...ownPlayerState(), online: true });
+  return Array.from(multiplayer.players.values()).filter((player) => (
+    player.online !== false &&
+    (!player.roundId || !multiplayer.roundId || player.roundId === multiplayer.roundId)
+  ));
+}
+
+function everyActivePlayerFinished() {
+  const players = activeRoundPlayers();
+  return players.length > 0 && players.every((player) => player.solved || player.out);
+}
+
+function finishMultiplayerRoundIfDone() {
+  if (!isMultiplayerActive() || !current || roundOver || !everyActivePlayerFinished()) return false;
+  roundOver = true;
+  input.disabled = true;
+  setFeedback(`Everyone is finished. Answer: ${current.name}.`, "bad");
+  updateLabels();
+  if (multiplayer.isHost) sendRoomState();
+  return true;
 }
 
 function markEventSeen(payload) {
@@ -710,6 +734,7 @@ function applyRoomState(payload) {
   if (payload.roundOver) {
     roundOver = true;
     input.disabled = true;
+    if (current) setFeedback(`Round over. Answer: ${current.name}.`, "bad");
   }
   updateMultiplayerUi();
   updateLabels();
@@ -730,6 +755,7 @@ function applyPlayerUpdate(payload) {
     online: true,
   });
   updatePlayersList();
+  finishMultiplayerRoundIfDone();
 }
 
 function applyGuessEvent(payload) {
@@ -759,10 +785,12 @@ function applyGuessEvent(payload) {
   } else {
     const distanceText = `${Math.round(payload.distance || 0).toLocaleString()} km`;
     addHistory(`${payload.playerName}: ${payload.guessName} was ${distanceText} away`);
+    if (payload.out) addHistory(`${payload.playerName}: out of guesses`);
   }
 
   updateLabels();
   updatePlayersList();
+  finishMultiplayerRoundIfDone();
 }
 
 function broadcastPlayerUpdate() {
@@ -885,11 +913,12 @@ async function joinRoom(roomCode, asHost = false) {
 function submitMultiplayerGuess(rawGuess) {
   if (!current || !isMultiplayerActive()) return;
   if (roundOver) {
-    setFeedback("Round over. Host can start the next one.");
+    setFeedback(`Round over. Answer: ${current.name}. Host can start the next one.`);
     return;
   }
   if (multiplayer.out || multiplayer.solved || guessesLeft <= 0) {
-    setFeedback("You are out for this round.", "bad");
+    const suffix = multiplayer.out ? ` Answer: ${current.name}.` : "";
+    setFeedback(`You are out for this round.${suffix}`, "bad");
     playSound("unknown");
     return;
   }
@@ -939,7 +968,7 @@ function submitMultiplayerGuess(rawGuess) {
     if (guessesLeft <= 0) {
       multiplayer.out = true;
       input.disabled = true;
-      setFeedback(`${guessed.name} is ${distanceText} away. You are out.`, "bad");
+      setFeedback(`${guessed.name} is ${distanceText} away. Answer: ${current.name}.`, "bad");
       playSound("wrong");
     } else {
       setFeedback(`${guessed.name} is ${distanceText} away. ${guessesLeft} guesses left.`);
@@ -960,6 +989,7 @@ function submitMultiplayerGuess(rawGuess) {
     correctAt: multiplayer.correctAt,
   });
   broadcastPlayerUpdate();
+  finishMultiplayerRoundIfDone();
   updateLabels();
   updatePlayersList();
   input.value = "";
@@ -1669,8 +1699,9 @@ skipButton.addEventListener("click", () => {
     multiplayer.out = true;
     guessesLeft = 0;
     input.disabled = true;
-    setFeedback("Skipped. Waiting for the next round.");
+    setFeedback(`Skipped. Answer: ${current.name}. Waiting for next round.`);
     broadcastPlayerUpdate();
+    finishMultiplayerRoundIfDone();
     updateLabels();
     return;
   }
