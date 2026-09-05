@@ -40,6 +40,9 @@ let rounds = 0;
 let hintLevel = 0;
 let worldZoom = minWorldZoom;
 let pendingDrawFrame = 0;
+let roomStateRetryTimer = 0;
+let roomStateRetryAttempts = 0;
+let canvasStatusMessage = "";
 let soundEnabled = true;
 let audioContext = null;
 const localGeometryCache = new WeakMap();
@@ -486,6 +489,7 @@ function syncPresence() {
     }
   }
   updatePlayersList();
+  if (multiplayer.isHost && current) sendRoomState();
 }
 
 function sortedPlayers() {
@@ -571,6 +575,40 @@ function sendRoomState(targetId = "") {
   sendRoomEvent("room-state", roomStatePayload(targetId));
 }
 
+function clearRoomStateRetry() {
+  if (roomStateRetryTimer) {
+    window.clearTimeout(roomStateRetryTimer);
+    roomStateRetryTimer = 0;
+  }
+  roomStateRetryAttempts = 0;
+}
+
+function requestRoomStateUntilLoaded() {
+  if (!isMultiplayerActive() || multiplayer.isHost || current) {
+    clearRoomStateRetry();
+    return;
+  }
+
+  roomStateRetryAttempts += 1;
+  sendRoomEvent("request-state");
+
+  if (roomStateRetryAttempts >= 10) {
+    canvasStatusMessage = "Waiting for host...";
+    setFeedback(`Joined room ${multiplayer.roomCode}. Waiting for host.`);
+    resizeCanvas();
+    clearRoomStateRetry();
+    return;
+  }
+
+  const delay = roomStateRetryAttempts < 3 ? 700 : 1400;
+  roomStateRetryTimer = window.setTimeout(requestRoomStateUntilLoaded, delay);
+}
+
+function startRoomStateRetry() {
+  clearRoomStateRetry();
+  requestRoomStateUntilLoaded();
+}
+
 function resetMultiplayerRoundStats() {
   guessesLeft = maxGuesses;
   roundOver = false;
@@ -584,18 +622,20 @@ function resetMultiplayerRoundStats() {
 }
 
 function showRoomLinkLoading(roomCode) {
+  const code = normalizeRoomCode(roomCode);
   current = null;
   guessesLeft = maxGuesses;
   roundOver = false;
   guessedNames = new Set();
   hintLevel = 0;
   worldZoom = minWorldZoom;
+  canvasStatusMessage = code ? `Joining room ${code}...` : "Joining room...";
   history.innerHTML = "";
   input.value = "";
   input.disabled = true;
   if (skipButton) skipButton.disabled = true;
   if (nextButton) nextButton.disabled = true;
-  setFeedback(`Joining room ${roomCode}...`);
+  setFeedback(canvasStatusMessage);
   updateHintUi();
   resizeCanvas();
 }
@@ -604,6 +644,8 @@ function loadMultiplayerRound(countryName, roundId, startedAt) {
   const country = countryByName.get(countryName);
   if (!country) return false;
   current = country;
+  canvasStatusMessage = "";
+  clearRoomStateRetry();
   multiplayer.roundId = roundId || makeEventId();
   multiplayer.roundStartedAt = startedAt || Date.now();
   resetMultiplayerRoundStats();
@@ -662,7 +704,7 @@ function applyRoomState(payload) {
   if (Array.isArray(payload.players)) {
     for (const player of payload.players) ensurePlayer(player);
   }
-  if (payload.countryName && payload.roundId && payload.roundId !== multiplayer.roundId) {
+  if (payload.countryName && payload.roundId && (!current || payload.roundId !== multiplayer.roundId)) {
     loadMultiplayerRound(payload.countryName, payload.roundId, payload.roundStartedAt);
   }
   if (payload.roundOver) {
@@ -750,6 +792,7 @@ function getRealtimeClient() {
 }
 
 async function leaveRoom(resetUrl = true, startSingleRound = true, showSingleFeedback = true) {
+  clearRoomStateRetry();
   if (multiplayer.channel && realtimeClient) {
     await multiplayer.channel.untrack();
     await realtimeClient.removeChannel(multiplayer.channel);
@@ -762,6 +805,7 @@ async function leaveRoom(resetUrl = true, startSingleRound = true, showSingleFee
   multiplayer.isHost = false;
   multiplayer.players.clear();
   multiplayer.roundId = "";
+  canvasStatusMessage = "";
   if (resetUrl && window.history && window.history.replaceState) {
     const url = new URL(window.location.href);
     url.searchParams.delete("room");
@@ -794,6 +838,8 @@ async function joinRoom(roomCode, asHost = false) {
   multiplayer.players.clear();
   ensurePlayer({ ...ownPlayerState(), online: true });
   updateRoomUrl(code);
+  canvasStatusMessage = `Joining room ${code}...`;
+  resizeCanvas();
   updateMultiplayerUi();
 
   const client = getRealtimeClient();
@@ -824,10 +870,12 @@ async function joinRoom(roomCode, asHost = false) {
         trackPresence();
         updateMultiplayerUi();
         if (asHost) startMultiplayerRound();
-        else sendRoomEvent("request-state");
+        else startRoomStateRetry();
       } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
         multiplayer.connecting = false;
         multiplayer.connected = false;
+        canvasStatusMessage = "Room connection failed.";
+        resizeCanvas();
         setMultiplayerStatus("Room connection failed.", "bad");
         updateMultiplayerUi();
       }
@@ -1397,7 +1445,7 @@ function drawCurrentCountry() {
     ctx.fillStyle = "rgba(36, 50, 37, 0.72)";
     ctx.font = `${Math.round(16 * dpr)}px "MS Sans Serif", Tahoma, sans-serif`;
     ctx.textAlign = "center";
-    ctx.fillText(multiplayer.roomCode ? "Joining room..." : "Loading map...", width / 2, height / 2);
+    ctx.fillText(canvasStatusMessage || "Preparing map...", width / 2, height / 2);
     ctx.restore();
     return;
   }
@@ -1468,6 +1516,8 @@ function addHistory(message) {
 
 function newRound() {
   current = chooseCountry();
+  canvasStatusMessage = "";
+  clearRoomStateRetry();
   guessesLeft = maxGuesses;
   roundOver = false;
   hintLevel = forcedHintLevel;
