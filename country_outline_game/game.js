@@ -39,8 +39,10 @@ let score = 0;
 let rounds = 0;
 let hintLevel = 0;
 let worldZoom = minWorldZoom;
+let pendingDrawFrame = 0;
 let soundEnabled = true;
 let audioContext = null;
+const localGeometryCache = new WeakMap();
 
 const aliasMap = new Map();
 const countryByName = new Map();
@@ -83,7 +85,7 @@ const multiplayer = {
   correctAt: null,
   seenEvents: new Set(),
 };
-let multiplayerPanelOpen = Boolean(requestedRoom);
+let multiplayerPanelOpen = false;
 
 function safeStorageGet(key) {
   try {
@@ -261,7 +263,7 @@ function firstLetter(country) {
 function updateHintUi() {
   if (hintButton) {
     hintButton.textContent = hintLevel >= maxHints ? "Hints used" : `Hint ${hintLevel}/${maxHints}`;
-    hintButton.disabled = roundOver || hintLevel >= maxHints;
+    hintButton.disabled = !current || roundOver || hintLevel >= maxHints;
   }
 
   if (!hintText) return;
@@ -278,7 +280,15 @@ function updateHintUi() {
 
 function setWorldZoom(value) {
   worldZoom = Math.max(minWorldZoom, Math.min(maxWorldZoom, value));
-  drawCurrentCountry();
+  scheduleDrawCurrentCountry();
+}
+
+function scheduleDrawCurrentCountry() {
+  if (pendingDrawFrame) return;
+  pendingDrawFrame = window.requestAnimationFrame(() => {
+    pendingDrawFrame = 0;
+    drawCurrentCountry();
+  });
 }
 
 function isMultiplayerActive() {
@@ -507,6 +517,23 @@ function resetMultiplayerRoundStats() {
   multiplayer.correctAt = null;
 }
 
+function showRoomLinkLoading(roomCode) {
+  current = null;
+  guessesLeft = maxGuesses;
+  roundOver = false;
+  guessedNames = new Set();
+  hintLevel = 0;
+  worldZoom = minWorldZoom;
+  history.innerHTML = "";
+  input.value = "";
+  input.disabled = true;
+  if (skipButton) skipButton.disabled = true;
+  if (nextButton) nextButton.disabled = true;
+  setFeedback(`Joining room ${roomCode}...`);
+  updateHintUi();
+  resizeCanvas();
+}
+
 function loadMultiplayerRound(countryName, roundId, startedAt) {
   const country = countryByName.get(countryName);
   if (!country) return false;
@@ -517,6 +544,8 @@ function loadMultiplayerRound(countryName, roundId, startedAt) {
   history.innerHTML = "";
   input.value = "";
   input.disabled = false;
+  if (skipButton) skipButton.disabled = false;
+  if (nextButton) nextButton.disabled = false;
   setFeedback(`Room ${multiplayer.roomCode}. Lowest points wins.`);
   updateLabels();
   resizeCanvas();
@@ -654,7 +683,7 @@ function getRealtimeClient() {
   return realtimeClient;
 }
 
-async function leaveRoom(resetUrl = true, startSingleRound = true) {
+async function leaveRoom(resetUrl = true, startSingleRound = true, showSingleFeedback = true) {
   if (multiplayer.channel && realtimeClient) {
     await multiplayer.channel.untrack();
     await realtimeClient.removeChannel(multiplayer.channel);
@@ -675,7 +704,7 @@ async function leaveRoom(resetUrl = true, startSingleRound = true) {
   updateMultiplayerUi();
   if (startSingleRound && countries.length) {
     newRound();
-  } else if (!roundOver) {
+  } else if (!roundOver && showSingleFeedback) {
     setFeedback("Single-player mode.");
   }
 }
@@ -691,7 +720,7 @@ async function joinRoom(roomCode, asHost = false) {
     return;
   }
 
-  await leaveRoom(false, false);
+  await leaveRoom(false, false, false);
   multiplayer.roomCode = code;
   multiplayer.isHost = asHost;
   multiplayer.hostId = asHost ? multiplayer.playerId : "";
@@ -883,8 +912,17 @@ function unwrappedCountryRings(country) {
 
 function projectedRings(country) {
   const unwrapped = unwrappedCountryRings(country);
-  const longitudes = unwrapped.flat().map(([lon]) => lon);
-  const span = Math.max(...longitudes) - Math.min(...longitudes);
+  let minLon = Infinity;
+  let maxLon = -Infinity;
+
+  for (const ring of unwrapped) {
+    for (const [lon] of ring) {
+      if (lon < minLon) minLon = lon;
+      if (lon > maxLon) maxLon = lon;
+    }
+  }
+
+  const span = maxLon - minLon;
 
   if (span > 105) {
     const xScale = Math.max(0.22, Math.cos(country.lat * Math.PI / 180));
@@ -959,6 +997,19 @@ function drawingBounds(rings) {
     minY: Math.min(...ys),
     maxY: Math.max(...ys),
   };
+}
+
+function countryDrawingGeometry(country) {
+  let cached = localGeometryCache.get(country);
+  if (cached) return cached;
+
+  const rings = projectedRings(country);
+  cached = {
+    rings,
+    bounds: drawingBounds(rings),
+  };
+  localGeometryCache.set(country, cached);
+  return cached;
 }
 
 function drawCanvasBackdrop(width, height, dpr) {
@@ -1046,6 +1097,7 @@ function drawWorldCountry(country, box, width, height, dpr, options) {
   ctx.lineWidth = options.lineWidth * dpr;
   ctx.strokeStyle = options.stroke;
   ctx.fillStyle = options.fill || "transparent";
+  const stride = Math.max(1, options.stride || 1);
 
   for (const ring of country.rings) {
     if (ring.length < 2) continue;
@@ -1054,7 +1106,8 @@ function drawWorldCountry(country, box, width, height, dpr, options) {
     let segmentStarted = false;
     let split = false;
 
-    for (const [lon, lat] of ring) {
+    for (let i = 0; i < ring.length; i += stride) {
+      const [lon, lat] = ring[i];
       const [baseX] = baseWorldPoint(lon, lat, box);
       const [x, y] = worldScreenPoint(lon, lat, box, width, height);
       const crossesEdge = previousBaseX !== null && Math.abs(baseX - previousBaseX) > box.width * 0.52;
@@ -1068,6 +1121,21 @@ function drawWorldCountry(country, box, width, height, dpr, options) {
       }
 
       previousBaseX = baseX;
+    }
+
+    if (stride > 1 && (ring.length - 1) % stride !== 0) {
+      const [lon, lat] = ring[ring.length - 1];
+      const [baseX] = baseWorldPoint(lon, lat, box);
+      const [x, y] = worldScreenPoint(lon, lat, box, width, height);
+      const crossesEdge = previousBaseX !== null && Math.abs(baseX - previousBaseX) > box.width * 0.52;
+
+      if (!segmentStarted || crossesEdge) {
+        ctx.moveTo(x, y);
+        segmentStarted = true;
+        if (crossesEdge) split = true;
+      } else {
+        ctx.lineTo(x, y);
+      }
     }
 
     if (!split) {
@@ -1114,12 +1182,14 @@ function drawWorldGrid(box, width, height, dpr) {
 
 function drawWorldView(width, height, dpr) {
   const box = worldBox(width, height, dpr);
+  const backgroundStride = worldZoom < 2 ? 5 : worldZoom < 5 ? 3 : 2;
   drawWorldGrid(box, width, height, dpr);
 
   for (const country of countries) {
     drawWorldCountry(country, box, width, height, dpr, {
       lineWidth: 0.65,
       stroke: "rgba(49, 66, 44, 0.22)",
+      stride: country === current ? 1 : backgroundStride,
     });
   }
 
@@ -1162,7 +1232,7 @@ function traceRings(rings, offsetX, offsetY, scale) {
 }
 
 function drawCurrentCountry() {
-  if (!current || !canvas.width || !canvas.height) return;
+  if (!canvas.width || !canvas.height) return;
 
   const width = canvas.width;
   const height = canvas.height;
@@ -1170,18 +1240,27 @@ function drawCurrentCountry() {
 
   ctx.clearRect(0, 0, width, height);
   drawCanvasBackdrop(width, height, dpr);
+  if (!current) {
+    ctx.save();
+    ctx.fillStyle = "rgba(36, 50, 37, 0.72)";
+    ctx.font = `${Math.round(16 * dpr)}px "MS Sans Serif", Tahoma, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText(multiplayer.roomCode ? "Joining room..." : "Loading map...", width / 2, height / 2);
+    ctx.restore();
+    return;
+  }
+
   if (hintLevel >= 2) {
     drawWorldView(width, height, dpr);
     return;
   }
 
   const margin = 54 * dpr;
-  const rings = projectedRings(current);
-  const bounds = drawingBounds(rings);
+  const { rings, bounds } = countryDrawingGeometry(current);
   if (!bounds) return;
   const { minX, maxX, minY, maxY } = bounds;
-  const spanX = Math.max(maxX - minX, 0.05);
-  const spanY = Math.max(maxY - minY, 0.05);
+  const spanX = Math.max(maxX - minX, 0.00001);
+  const spanY = Math.max(maxY - minY, 0.00001);
   const scale = Math.min((width - 2 * margin) / spanX, (height - 2 * margin) / spanY);
   const offsetX = (width - spanX * scale) / 2 - minX * scale;
   const offsetY = (height + spanY * scale) / 2 + minY * scale;
@@ -1249,6 +1328,8 @@ function newRound() {
   history.innerHTML = "";
   input.value = "";
   input.disabled = false;
+  if (skipButton) skipButton.disabled = false;
+  if (nextButton) nextButton.disabled = false;
   setFeedback("Five guesses. Wrong answers get distance feedback.");
   updateLabels();
   resizeCanvas();
@@ -1506,14 +1587,14 @@ updateMultiplayerUi();
 
 if (!countries.length) {
   setFeedback("Country data did not load.", "bad");
+} else if (requestedRoom && canUseSupabase()) {
+  showRoomLinkLoading(requestedRoom);
+  updateMultiplayerUi();
+  joinRoom(requestedRoom, false);
 } else {
   newRound();
   updateMultiplayerUi();
   if (requestedRoom) {
-    if (canUseSupabase()) {
-      joinRoom(requestedRoom, false);
-    } else {
-      setMultiplayerStatus("Add Supabase keys before joining.", "bad");
-    }
+    setMultiplayerStatus("Add Supabase keys before joining.", "bad");
   }
 }
