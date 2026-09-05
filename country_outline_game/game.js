@@ -43,6 +43,8 @@ let pendingDrawFrame = 0;
 let soundEnabled = true;
 let audioContext = null;
 const localGeometryCache = new WeakMap();
+const nearbyHintCache = new WeakMap();
+const samplePointCache = new WeakMap();
 
 const aliasMap = new Map();
 const countryByName = new Map();
@@ -256,6 +258,70 @@ function haversineKm(lon1, lat1, lon2, lat2) {
   return 2 * radiusKm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+function countrySamplePoints(country) {
+  const cached = samplePointCache.get(country);
+  if (cached) return cached;
+
+  const totalPoints = country.rings.reduce((total, ring) => total + ring.length, 0);
+  const stride = Math.max(1, Math.ceil(totalPoints / 140));
+  const points = [];
+
+  for (const ring of country.rings) {
+    for (let i = 0; i < ring.length; i += stride) {
+      points.push(ring[i]);
+    }
+    if (ring.length && (ring.length - 1) % stride !== 0) {
+      points.push(ring[ring.length - 1]);
+    }
+  }
+
+  if (!points.length) points.push([country.lon, country.lat]);
+  samplePointCache.set(country, points);
+  return points;
+}
+
+function approximateBorderDistanceKm(country, candidate) {
+  const points = countrySamplePoints(country);
+  const candidatePoints = countrySamplePoints(candidate);
+  let best = haversineKm(country.lon, country.lat, candidate.lon, candidate.lat);
+
+  for (const [lon, lat] of points) {
+    for (const [candidateLon, candidateLat] of candidatePoints) {
+      const distance = haversineKm(lon, lat, candidateLon, candidateLat);
+      if (distance < best) best = distance;
+      if (best < 8) return best;
+    }
+  }
+
+  return best;
+}
+
+function nearbyHintCountry(country) {
+  if (nearbyHintCache.has(country)) return nearbyHintCache.get(country);
+
+  const candidates = countries
+    .filter((candidate) => candidate !== country)
+    .map((candidate) => ({
+      country: candidate,
+      centroidDistance: haversineKm(country.lon, country.lat, candidate.lon, candidate.lat),
+    }))
+    .sort((a, b) => a.centroidDistance - b.centroidDistance)
+    .slice(0, 32)
+    .map((candidate) => ({
+      ...candidate,
+      borderDistance: approximateBorderDistanceKm(country, candidate.country),
+    }))
+    .sort((a, b) => (
+      a.borderDistance - b.borderDistance ||
+      a.centroidDistance - b.centroidDistance ||
+      a.country.name.localeCompare(b.country.name)
+    ));
+
+  const nearby = candidates.length ? candidates[0].country : null;
+  nearbyHintCache.set(country, nearby);
+  return nearby;
+}
+
 function firstLetter(country) {
   return country.name.trim().charAt(0).toUpperCase();
 }
@@ -270,7 +336,7 @@ function updateHintUi() {
   if (!current || hintLevel === 0) {
     hintText.textContent = "";
   } else if (hintLevel === 1) {
-    hintText.textContent = "Hint 1: the mystery country is softly filled.";
+    hintText.textContent = "Hint 1: a nearby country is outlined.";
   } else if (hintLevel === 2) {
     hintText.textContent = "Hint 2: world map mode. Scroll to zoom.";
   } else {
@@ -1231,6 +1297,92 @@ function traceRings(rings, offsetX, offsetY, scale) {
   }
 }
 
+function fittedTransform(bounds, box) {
+  const spanX = Math.max(bounds.maxX - bounds.minX, 0.00001);
+  const spanY = Math.max(bounds.maxY - bounds.minY, 0.00001);
+  const scale = Math.min(box.width / spanX, box.height / spanY);
+
+  return {
+    offsetX: box.x + (box.width - spanX * scale) / 2 - bounds.minX * scale,
+    offsetY: box.y + (box.height + spanY * scale) / 2 + bounds.minY * scale,
+    scale,
+  };
+}
+
+function drawFittedRings(rings, bounds, box, dpr, options = {}) {
+  if (!bounds || !box.width || !box.height) return;
+
+  const { offsetX, offsetY, scale } = fittedTransform(bounds, box);
+  ctx.save();
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  if (options.fill) {
+    traceRings(rings, offsetX, offsetY, scale);
+    ctx.fillStyle = options.fill;
+    ctx.fill();
+  }
+
+  for (const stroke of options.strokes || []) {
+    traceRings(rings, offsetX, offsetY, scale);
+    ctx.setLineDash(stroke.dash ? stroke.dash.map((value) => value * dpr) : []);
+    ctx.lineWidth = stroke.width * dpr;
+    ctx.strokeStyle = stroke.color;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function hintLayoutBoxes(width, height, dpr) {
+  const margin = 54 * dpr;
+  const gap = 24 * dpr;
+  const fullBox = {
+    x: margin,
+    y: margin,
+    width: Math.max(1, width - 2 * margin),
+    height: Math.max(1, height - 2 * margin),
+  };
+
+  if (fullBox.width >= fullBox.height * 1.15) {
+    const hintWidth = Math.max(90 * dpr, fullBox.width * 0.32);
+    const mainWidth = Math.max(1, fullBox.width - hintWidth - gap);
+    return {
+      fullBox,
+      mainBox: {
+        x: fullBox.x,
+        y: fullBox.y,
+        width: mainWidth,
+        height: fullBox.height,
+      },
+      hintBox: {
+        x: fullBox.x + mainWidth + gap,
+        y: fullBox.y + fullBox.height * 0.08,
+        width: Math.max(1, fullBox.width - mainWidth - gap),
+        height: Math.max(1, fullBox.height * 0.84),
+      },
+    };
+  }
+
+  const hintHeight = Math.max(76 * dpr, fullBox.height * 0.32);
+  const mainHeight = Math.max(1, fullBox.height - hintHeight - gap);
+  return {
+    fullBox,
+    mainBox: {
+      x: fullBox.x,
+      y: fullBox.y,
+      width: fullBox.width,
+      height: mainHeight,
+    },
+    hintBox: {
+      x: fullBox.x + fullBox.width * 0.12,
+      y: fullBox.y + mainHeight + gap,
+      width: fullBox.width * 0.76,
+      height: Math.max(1, fullBox.height - mainHeight - gap),
+    },
+  };
+}
+
 function drawCurrentCountry() {
   if (!canvas.width || !canvas.height) return;
 
@@ -1255,38 +1407,34 @@ function drawCurrentCountry() {
     return;
   }
 
-  const margin = 54 * dpr;
   const { rings, bounds } = countryDrawingGeometry(current);
   if (!bounds) return;
-  const { minX, maxX, minY, maxY } = bounds;
-  const spanX = Math.max(maxX - minX, 0.00001);
-  const spanY = Math.max(maxY - minY, 0.00001);
-  const scale = Math.min((width - 2 * margin) / spanX, (height - 2 * margin) / spanY);
-  const offsetX = (width - spanX * scale) / 2 - minX * scale;
-  const offsetY = (height + spanY * scale) / 2 + minY * scale;
+  const { fullBox, mainBox, hintBox } = hintLayoutBoxes(width, height, dpr);
+  const currentBox = hintLevel === 1 ? mainBox : fullBox;
 
-  ctx.save();
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
+  drawFittedRings(rings, bounds, currentBox, dpr, {
+    fill: "rgba(255, 253, 242, 0.34)",
+    strokes: [
+      { width: 7, color: "rgba(255, 253, 242, 0.7)" },
+      { width: 3, color: "#253320" },
+      { width: 1.1, color: "rgba(91, 79, 57, 0.32)" },
+    ],
+  });
 
-  traceRings(rings, offsetX, offsetY, scale);
-  ctx.fillStyle = hintLevel >= 1 ? "rgba(255, 230, 142, 0.62)" : "rgba(255, 253, 242, 0.34)";
-  ctx.fill();
-
-  ctx.lineWidth = 7 * dpr;
-  ctx.strokeStyle = "rgba(255, 253, 242, 0.7)";
-  ctx.stroke();
-
-  traceRings(rings, offsetX, offsetY, scale);
-  ctx.lineWidth = 3 * dpr;
-  ctx.strokeStyle = "#253320";
-  ctx.stroke();
-
-  traceRings(rings, offsetX, offsetY, scale);
-  ctx.lineWidth = 1.1 * dpr;
-  ctx.strokeStyle = "rgba(91, 79, 57, 0.32)";
-  ctx.stroke();
-  ctx.restore();
+  if (hintLevel === 1) {
+    const nearby = nearbyHintCountry(current);
+    const nearbyGeometry = nearby ? countryDrawingGeometry(nearby) : null;
+    if (nearbyGeometry && nearbyGeometry.bounds) {
+      drawFittedRings(nearbyGeometry.rings, nearbyGeometry.bounds, hintBox, dpr, {
+        fill: "rgba(126, 168, 137, 0.2)",
+        strokes: [
+          { width: 8, color: "rgba(255, 253, 242, 0.8)" },
+          { width: 3.6, color: "rgba(49, 66, 44, 0.92)" },
+          { width: 1.2, color: "rgba(223, 139, 114, 0.72)" },
+        ],
+      });
+    }
+  }
 }
 
 function setFeedback(message, kind = "") {
