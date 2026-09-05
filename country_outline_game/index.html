@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Country Outline Game</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <div class="desk-decor" aria-hidden="true">
+        <span class="cloud cloud--one"></span>
+        <span class="cloud cloud--two"></span>
+        <span class="sun-token"></span>
+        <span class="flower-patch flower-patch--one">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="flower-patch flower-patch--two">
+          <span></span>
+          <span></span>
+        </span>
+        <span class="desktop-sticker desktop-sticker--floppy"></span>
+        <span class="desktop-sticker desktop-sticker--note"></span>
+      </div>
+      <section class="game-panel" aria-labelledby="game-title">
+        <div class="window-bar" aria-hidden="true">
+          <span class="window-bar__title">Map Meadow.exe</span>
+          <span class="window-buttons">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Map Meadow 95</p>
+            <h1 id="game-title">Guess the country</h1>
+          </div>
+          <div class="stats" aria-label="Game score">
+            <span id="score">Score 0/0</span>
+            <span id="guessCount">Guess 1 of 5</span>
+            <button type="button" id="soundToggle" class="sound-toggle" aria-pressed="true">Sound on</button>
+            <button type="button" id="friendsTabButton" class="friends-tab" aria-controls="multiplayerPanel" aria-expanded="false">Friends</button>
+          </div>
+        </header>
+
+        <div class="canvas-wrap">
+          <span class="map-charm map-charm--pin" aria-hidden="true"></span>
+          <span class="map-charm map-charm--sparkle" aria-hidden="true"></span>
+          <span class="map-charm map-charm--flower" aria-hidden="true"></span>
+          <canvas id="outlineCanvas" aria-label="Country outline"></canvas>
+        </div>
+
+        <form id="guessForm" class="guess-row" autocomplete="off">
+          <label class="sr-only" for="guessInput">Country guess</label>
+          <input id="guessInput" type="text" placeholder="Type a country name" autofocus>
+          <button type="submit">Guess</button>
+          <button type="button" id="hintButton">Hint 0/3</button>
+          <button type="button" id="skipButton">Skip</button>
+          <button type="button" id="nextButton">Next</button>
+        </form>
+
+        <p id="hintText" class="hint-text" aria-live="polite"></p>
+        <p id="feedback" class="feedback" aria-live="polite"></p>
+        <section id="multiplayerPanel" class="multiplayer-panel" aria-labelledby="multiplayer-title" hidden>
+          <div class="multiplayer-panel__head">
+            <div>
+              <p class="eyebrow">Friends mode</p>
+              <h2 id="multiplayer-title">Multiplayer room</h2>
+            </div>
+            <p id="multiplayerStatus" class="multiplayer-status" aria-live="polite">Single-player mode.</p>
+          </div>
+          <div class="room-row">
+            <label class="sr-only" for="playerNameInput">Your name</label>
+            <input id="playerNameInput" type="text" maxlength="18" placeholder="Your name">
+            <button type="button" id="createRoomButton">Create room</button>
+            <label class="sr-only" for="roomCodeInput">Room code</label>
+            <input id="roomCodeInput" type="text" maxlength="8" placeholder="Room code">
+            <button type="button" id="joinRoomButton">Join</button>
+            <button type="button" id="copyRoomLinkButton" disabled>Copy link</button>
+            <button type="button" id="leaveRoomButton" disabled>Leave</button>
+          </div>
+          <ol id="playersList" class="players-list" aria-label="Multiplayer standings"></ol>
+        </section>
+        <ol id="history" class="history" aria-label="Guess history"></ol>
+      </section>
+    </main>
+
+    <script src="country_data.js"></script>
+    <script src="supabase_config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="game.js"></script>
+  </body>
+</html>

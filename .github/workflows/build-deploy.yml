@@ -38,6 +38,28 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Write game Supabase config
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          config = {
+              "url": os.environ.get("SUPABASE_URL", ""),
+              "anonKey": os.environ.get("SUPABASE_PUBLISHABLE_KEY", ""),
+          }
+          Path("country_outline_game/supabase_config.js").write_text(
+              "window.MAP_MEADOW_SUPABASE = "
+              + json.dumps(config, separators=(",", ":"))
+              + ";\n",
+              encoding="utf-8",
+          )
+          PY
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -1,0 +1,6 @@
+# Local browser config. GitHub Pages deploy writes this from repo secrets.
+country_outline_game/supabase_config.js
+
+__pycache__/
+*.pyc
+visual_*.png
